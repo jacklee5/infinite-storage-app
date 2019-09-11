@@ -1,0 +1,20 @@
+{
+  "name": "Berd-Box",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/jacklee5/Berd-Box.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/jacklee5/Berd-Box/issues"
+  },
+  "homepage": "https://github.com/jacklee5/Berd-Box#readme"
+}
