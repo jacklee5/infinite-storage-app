@@ -178,6 +178,9 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
         })
 });
 
+app.get("/api/test", (req, res) => {
+    res.send("\"a response\"");
+})
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
