@@ -1,0 +1,26 @@
+.header{
+    background: #FAFAFA;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    padding: 8px 16px;
+}
+.header .logo{
+    height: 36px;
+    border-radius: 50%;
+}
+.header .title{
+    display: inline-block;
+    line-height: 36px;
+    vertical-align: top;
+    font-weight: 400;
+    text-transform: uppercase;
+    margin: 0;
+    font-size: 30px;
+    margin-left: 8px;
+}
+.header .account-button-container{
+    position: absolute;
+    left: 8px;
+}
+.header .account-button-container img{
+    height: 36px;
+}

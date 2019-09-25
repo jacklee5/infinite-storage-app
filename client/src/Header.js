@@ -1,13 +1,18 @@
 import React from 'react';
-import './Header.css';
-import logo from './new-year.png';
+import './css/Header.css';
+import logo from './img/new-year.png';
 
 export default class Header extends React.Component {
     render(){
         return (
-            <header class = "header">
-                <img src = {logo} class = "logo"></img>
-                <h1 class = "title">berd box</h1>
+            <header className = "header">
+                <div className = "logo-container">
+                    <img src = {logo} className = "logo"></img>
+                    <h1 className = "title">berdbox</h1>
+                </div>
+                <div className = "account-button-container">
+                    <img src = {logo}></img>
+                </div>
             </header>
         )
     }
