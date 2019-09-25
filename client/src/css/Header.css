@@ -19,8 +19,22 @@
 }
 .header .account-button-container{
     position: absolute;
-    left: 8px;
+    right: 16px;
+    top: 8px;
 }
-.header .account-button-container img{
+.header .account-button-container .account-img{
     height: 36px;
+    border-radius: 50%;
+    cursor: pointer;
+    position: absolute;
+    right: 0px;
+}
+.header .logo-container{
+    height: 36px;
+}
+.header .account-details{
+    background: white;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    position: relative;
+    top: 40px;
 }
