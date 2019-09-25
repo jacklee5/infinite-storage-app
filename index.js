@@ -149,7 +149,14 @@ app.use("/static", express.static("static"));
 
 app.get("/", isUserAuthenticated, (req, res) => {
     res.send("you are authenticated");
-})
+});
+
+// Logout route
+app.get("/logout", (req, res) => {
+    console.log("hi")
+    req.logout(); 
+    res.redirect('/');
+});
 
 // passport.authenticate middleware is used here to authenticate the request
 app.get('/auth/google', passport.authenticate('google', {
