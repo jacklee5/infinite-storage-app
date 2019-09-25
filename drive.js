@@ -1,10 +1,11 @@
+var async = require('async');
 module.exports = () => {
     const fs = require('fs');
     const readline = require('readline');
     const {google} = require('googleapis');
 
     // If modifying these scopes, delete token.json.
-    const SCOPES = ['https://www.googleapis.com/auth/documents.readonly'];
+    const SCOPES = ['https://www.googleapis.com/auth/drive'];
     // The file token.json stores the user's access and refresh tokens, and is
     // created automatically when the authorization flow completes for the first
     // time.
@@ -12,9 +13,13 @@ module.exports = () => {
 
     // Load client secrets from a local file.
     fs.readFile('credentials.json', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err);
-    // Authorize a client with credentials, then call the Google Docs API.
-    authorize(JSON.parse(content), printDocTitle);
+        if (err) return console.log('Error loading client secret file:', err);
+        // Authorize a client with credentials, then call the Google Docs API.
+
+        //Doc io
+        authorize(JSON.parse(content), printDocTitle);
+        authorize(JSON.parse(content), getFiles);
+
     });
 
     /**
@@ -80,5 +85,52 @@ module.exports = () => {
         if (err) return console.log('The API returned an error: ' + err);
         console.log(`The title of the document is: ${res.data.title}`);
     });
+    }
+
+    function getFiles(auth) {
+        // console.log("1");
+        // const docs = google.drive({version: 'v3', auth});
+        // docs.files.list({
+        // }, function (err, response) {
+        //     console.log("2");
+        //     console.log(err);
+        //     console.log(response);
+        //    // TODO handle response
+        // });
+
+        // console.log("3");
+
+        const drive = google.docs({version: 'v1', auth});
+        var pageToken = null;
+        // Using the NPM module 'async'
+        async.doWhilst(function (callback) {
+        drive.files.list({
+            fields: 'nextPageToken, files(id, name)',
+            spaces: 'drive',
+            pageToken: pageToken
+        }, function (err, res) {
+            if (err) {
+            // Handle error
+            console.error(err);
+            callback(err)
+            } else {
+            console.log(res);
+            res.files.forEach(function (file) {
+                console.log('Found file: ', file.name, file.id);
+            });
+            pageToken = res.nextPageToken;
+            callback();
+            }
+        });
+        }, function () {
+        return !!pageToken;
+        }, function (err) {
+        if (err) {
+            // Handle error
+            console.error(err);
+        } else {
+            // All pages fetched
+        }
+        })
     }
 }
