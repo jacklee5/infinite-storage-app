@@ -185,8 +185,12 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
         })
 });
 
+//api land
 app.get("/api/test", (req, res) => {
     res.send("\"a response\"");
+})
+app.get("/api/account-img", (req, res) => {
+    res.send(`"${req.user.photo}"`);
 })
 
 const port = process.env.PORT || 1337;

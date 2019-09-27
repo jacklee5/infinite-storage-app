@@ -5,11 +5,13 @@ import MainPage from './MainPage'
 class App extends React.Component {
   render() {
     return (
-      <BrowserRouter>
-        <Switch>
-          <Route exact path="/" component = {MainPage}></Route>
-        </Switch>
-      </BrowserRouter>
+      <div style = {{animation: "fadeIn .3s"}}>
+        <BrowserRouter>
+          <Switch>
+            <Route exact path="/" component = {MainPage}></Route>
+          </Switch>
+        </BrowserRouter>
+      </div>
     )
   }
 }
