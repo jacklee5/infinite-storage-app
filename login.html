@@ -2,21 +2,48 @@
 
 <style>
 
+    body{
+        padding:10px;
+    }
+
+    .text{
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    #berdpic{
+        position:relative;
+        height:250px;
+        padding:50px;
+        width:auto;
+    }
+
+    #picANDbutton{
+        text-align: center;
+    }
+
+    #wholeAssButton{
+        height: 150px;
+        padding: 10px;
+        background: white;
+        border: none;
+        box-shadow: 0px 2px 4px -1px rgba(0, 0, 0, 0.2), 0px 4px 5px 0px rgba(0, 0, 0, 0.14), 0px 1px 10px 0px rgba(0, 0, 0, 0.12);
+    }
+    
 </style>
 <body>
     <div id = "title">
-        <h1>BERD-BOX</h1>
-        <h2>Literally Google Drive but we made it unlimited and absolutely free!</h2>
-        <p>(Don't sue us google plz and thx)</p>
+        <h1 class="text">BERD-BOX</h1>
+        <h2 class="text">Literally Google Drive but we made it unlimited and absolutely free!</h2>
+        <p class="text">(Don't sue us google plz and thx u)</p>
     </div>    
-
-    <img src="berd-box-logo.png">
-    <a href = "/auth/google" >
-        <button background = "background-secondary" style = "cursor:pointer">
-            <img class="gglPhoto" src=static\signInWithGoogle.png>
-        </button>
-    </a>
-    
-    
-
+    <div id ="picANDbutton">
+        <img id="berdpic" src="berd-box-logo.png">
+        <br>
+        <a href = "/auth/google">
+            <button style = "cursor:pointer" id = "wholeAssButton">
+                <img class="gglPhoto" src=client\piccypics\signInWithBerd.png>
+            </button>
+        </a>
+    </div>
 </body>
