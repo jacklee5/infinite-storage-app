@@ -28,19 +28,19 @@ const dbConfig = {
 
 const conn = new sql.ConnectionPool(dbConfig);
 
-// conn.connect()
-//     // Successfull connection
-//     .then(function () {
-//         console.log("connected to database");
+conn.connect()
+    // Successfull connection
+    .then(function () {
+        console.log("connected to database");
 
 
 
-//     })
-//     // Handle connection errors
-//     .catch(function (err) {
-//         console.log(err);
-//         conn.close();
-//     });
+    })
+    // Handle connection errors
+    .catch(function (err) {
+        console.log(err);
+        conn.close();
+    });
 
 app.use("/static", express.static("static"));
 

@@ -2,7 +2,9 @@ var async = require('async');
 module.exports = () => {
     const fs = require('fs');
     const readline = require('readline');
-    const {google} = require('googleapis');
+    const {
+        google
+    } = require('googleapis');
 
     // If modifying these scopes, delete token.json.
     const SCOPES = ['https://www.googleapis.com/auth/drive'];
@@ -29,16 +31,20 @@ module.exports = () => {
      * @param {function} callback The callback to call with the authorized client.
      */
     function authorize(credentials, callback) {
-    const {client_secret, client_id, redirect_uris} = credentials.installed;
-    const oAuth2Client = new google.auth.OAuth2(
-        client_id, client_secret, redirect_uris[0]);
+        const {
+            client_secret,
+            client_id,
+            redirect_uris
+        } = credentials.installed;
+        const oAuth2Client = new google.auth.OAuth2(
+            client_id, client_secret, redirect_uris[0]);
 
-    // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) return getNewToken(oAuth2Client, callback);
-        oAuth2Client.setCredentials(JSON.parse(token));
-        callback(oAuth2Client);
-    });
+        // Check if we have previously stored a token.
+        fs.readFile(TOKEN_PATH, (err, token) => {
+            if (err) return getNewToken(oAuth2Client, callback);
+            oAuth2Client.setCredentials(JSON.parse(token));
+            callback(oAuth2Client);
+        });
     }
 
     /**
@@ -48,28 +54,28 @@ module.exports = () => {
      * @param {getEventsCallback} callback The callback for the authorized client.
      */
     function getNewToken(oAuth2Client, callback) {
-    const authUrl = oAuth2Client.generateAuthUrl({
-        access_type: 'offline',
-        scope: SCOPES,
-    });
-    console.log('Authorize this app by visiting this url:', authUrl);
-    const rl = readline.createInterface({
-        input: process.stdin,
-        output: process.stdout,
-    });
-    rl.question('Enter the code from that page here: ', (code) => {
-        rl.close();
-        oAuth2Client.getToken(code, (err, token) => {
-        if (err) return console.error('Error retrieving access token', err);
-        oAuth2Client.setCredentials(token);
-        // Store the token to disk for later program executions
-        fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
-            if (err) console.error(err);
-            console.log('Token stored to', TOKEN_PATH);
+        const authUrl = oAuth2Client.generateAuthUrl({
+            access_type: 'offline',
+            scope: SCOPES,
         });
-        callback(oAuth2Client);
+        console.log('Authorize this app by visiting this url:', authUrl);
+        const rl = readline.createInterface({
+            input: process.stdin,
+            output: process.stdout,
         });
-    });
+        rl.question('Enter the code from that page here: ', (code) => {
+            rl.close();
+            oAuth2Client.getToken(code, (err, token) => {
+                if (err) return console.error('Error retrieving access token', err);
+                oAuth2Client.setCredentials(token);
+                // Store the token to disk for later program executions
+                fs.writeFile(TOKEN_PATH, JSON.stringify(token), (err) => {
+                    if (err) console.error(err);
+                    console.log('Token stored to', TOKEN_PATH);
+                });
+                callback(oAuth2Client);
+            });
+        });
     }
 
     /**
@@ -78,13 +84,16 @@ module.exports = () => {
      * @param {google.auth.OAuth2} auth The authenticated Google OAuth 2.0 client.
      */
     function printDocTitle(auth) {
-    const docs = google.docs({version: 'v1', auth});
-    docs.documents.get({
-        documentId: '195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE',
-    }, (err, res) => {
-        if (err) return console.log('The API returned an error: ' + err);
-        console.log(`The title of the document is: ${res.data.title}`);
-    });
+        const docs = google.docs({
+            version: 'v1',
+            auth
+        });
+        docs.documents.get({
+            documentId: '195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE',
+        }, (err, res) => {
+            if (err) return console.log('The API returned an error: ' + err);
+            console.log(`The title of the document is: ${res.data.title}`);
+        });
     }
 
     function getFiles(auth) {
@@ -100,37 +109,33 @@ module.exports = () => {
 
         // console.log("3");
 
-        const drive = google.docs({version: 'v1', auth});
-        var pageToken = null;
-        // Using the NPM module 'async'
-        async.doWhilst(function (callback) {
+        const drive = google.drive({
+            version: 'v3',
+            auth
+        });
+        const fileId = '1r-MQqFimUE4YuSezKg5-E7Zwy3QbT5Tt';
         drive.files.list({
-            fields: 'nextPageToken, files(id, name)',
+            includeRemoved: false,
             spaces: 'drive',
-            pageToken: pageToken
-        }, function (err, res) {
-            if (err) {
-            // Handle error
-            console.error(err);
-            callback(err)
+            fileId: fileId,
+            fields: 'nextPageToken, files(id, name, parents, mimeType, modifiedTime)',
+            q: `'${fileId}' in parents`
+        }, function (err, resp) {
+            if (!err) {
+                var i;
+                console.log(resp.data.files);
+                var files = resp.data.files;
+                for (i = 0; i < files.length; i++) {
+                    if (files[i].mimeType !== 'application/vnd.google-apps.folder') {
+                        console.log('file: ' + files[i].name);
+                    } else {
+                        console.log('directory: ' + files[i].name);
+                    }
+                    console.log(files[i]);
+                }
             } else {
-            console.log(res);
-            res.files.forEach(function (file) {
-                console.log('Found file: ', file.name, file.id);
-            });
-            pageToken = res.nextPageToken;
-            callback();
+                console.log('error: ', err);
             }
         });
-        }, function () {
-        return !!pageToken;
-        }, function (err) {
-        if (err) {
-            // Handle error
-            console.error(err);
-        } else {
-            // All pages fetched
-        }
-        })
     }
 }
