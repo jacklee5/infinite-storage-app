@@ -1,22 +1,42 @@
 <!DOCTYPE html>
 
-<style>
+<style>x
+    button{
+        height: 200px;
+        padding: 0, 0, 0, 0;
+        background: white;
+    }
+    
+    .text{
+        text-align: center;
+        font-family: 'Nunito', sans-serif;
+    }
+
+    #berdpic{
+        position: relative;
+        left: 50%;
+        transform: translateX(-50%); 
+        height:250px;
+        padding: 30px;
+        width:auto;
+    }
+
+    
 
 </style>
 <body>
     <div id = "title">
-        <h1>BERD-BOX</h1>
-        <h2>Literally Google Drive but we made it unlimited and absolutely free!</h2>
-        <p>(Don't sue us google plz and thx)</p>
+        <h1 class="text">BERD-BOX</h1>
+        <h2 class="text">Literally Google Drive but we made it unlimited and absolutely free!</h2>
+        <p class="text">(Don't sue us google plz and thx u)</p>
     </div>    
-
-    <img src="berd-box-logo.png">
-    <a href = "/auth/google" >
-        <button background = "background-secondary" style = "cursor:pointer">
-            <img class="gglPhoto" src=static\signInWithGoogle.png>
-        </button>
-    </a>
-    
-    
-
+    <div>
+        <img id="berdpic" src="berd-box-logo.png">
+        <br>
+        <a href = "/auth/google" id = "wholeAssButton">
+            <button background = "background-secondary" style = "cursor:pointer">
+                <img class="gglPhoto" src=client\piccypics\signInWithBerd.png>
+            </button>
+        </a>
+    </div>
 </body>
