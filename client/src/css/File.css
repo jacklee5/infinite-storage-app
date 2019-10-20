@@ -1,0 +1,13 @@
+.file{
+    font-size: 0;
+    width: 100%;
+}
+.file td{
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+    font-size: 14px;
+    display: inline-block;
+    padding: 8px;
+    box-sizing: border-box;
+}

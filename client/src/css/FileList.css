@@ -1,0 +1,30 @@
+.file-list-header{
+    width: 100%;
+}
+.file-list-header th, .file-list-header td{
+    font-weight: 400;
+    text-align: left;
+}
+.file-list-header th{
+    color: #616161;
+    text-transform: uppercase;
+    font-weight: 700;
+    font-size: 12px;
+    padding: 8px;
+    box-sizing: border-box;
+    display: inline-block;
+}
+.file-list hr{
+    margin: 0px 8px;
+    background: #BDBDBD;
+    border: none;
+    height: 1px;
+}
+.file-list{
+    transition: all .3s;
+}
+@media only screen and (min-width: 860px){
+    .file-list{
+        padding: 16px;
+    }
+}

@@ -169,7 +169,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
         .then(results => {
             const result = results.recordset;
             if (result[0]) {
-                res.redirect("/account");
+                res.redirect("http://localhost:3000");
             } else {
                 conn.query`INSERT INTO users (username, google_id, photo) VALUES (${req.user.displayName}, ${req.user.id}, ${req.user.photo})`
                 .then(result => {
@@ -192,8 +192,11 @@ app.get("/api/test", (req, res) => {
 app.get("/api/account-img", (req, res) => {
     res.send(`"${req.user.photo}"`);
 })
+app.get("/api/isAuthenticated", (req, res) => {
+    res.send(`${!!req.user}`);
+})
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
 
-drive();
+new drive();
