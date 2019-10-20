@@ -14,36 +14,10 @@ export default class FileList extends React.Component {
     componentDidMount(){
         window.addEventListener("click", () => {
             this.setState({activeIndex: -1})
-        })
-        const data = [{
-            fileName: "gay persons are ga1y",
-            date: "10/2/2019",
-            type: "IMG",
-            size: "10.6GB",
-            id: "lsadjfk"
-        },
-        {
-            fileName: "gay persons are2 gay",
-            date: "10/2/2019",
-            type: "IMG",
-            size: "10.6GB",
-            id: "lswyadjfk"
-        },
-        {
-            fileName: "gay persons 3are gay",
-            date: "10/2/2019",
-            type: "IMG",
-            size: "10.6GB",
-            id: "df"
-        },
-        {
-            fileName: "gay persons 4are gay",
-            date: "10/2/2019",
-            type: "IMG",
-            size: "10.6GB",
-            id: "as"
-        }];
-        this.setState({data: data})
+        });
+        fetch("/api/files")
+        .then(data => data.json())
+        .then(data => this.setState({data: data}));
     }
     handleFileClick(event, element){
         event.stopPropagation();
@@ -55,10 +29,9 @@ export default class FileList extends React.Component {
             <table className = "file-list-header">
                 <tbody>
                     <tr>
-                        <th style = {{width: "40%"}}>File Name</th>
-                        <th style = {{width: "25%"}}>Date</th>
-                        <th style = {{width: "16%"}}>Type</th>
-                        <th style = {{width: "16%"}}>Size</th>
+                        <th style = {{width: "40%"}}>Name</th>
+                        <th style = {{width: "30%"}}>Date</th>
+                        <th style = {{width: "30%"}}>Type</th>
                     </tr>
                 </tbody>
             </table>
@@ -73,7 +46,7 @@ export default class FileList extends React.Component {
                     active = {i === this.state.activeIndex}
                 ></File>)
             }) 
-            : "loading"}
+            : "loading files"}
         </div>
         )
     }

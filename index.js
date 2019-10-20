@@ -8,7 +8,8 @@ const cookieSession = require('cookie-session');
 const fs = require("fs");
 const sql = require("mssql");
 const bodyParser = require("body-parser");
-const drive = require('./drive.js')
+const Drive = require('./drive.js');
+const drive = new Drive();
 
 //dev or prod
 const HOST = process.env.NODE_ENV ? "https://berdbox.azurewebsites.net/" : "http://localhost:1337";
@@ -195,8 +196,13 @@ app.get("/api/account-img", (req, res) => {
 app.get("/api/isAuthenticated", (req, res) => {
     res.send(`${!!req.user}`);
 })
+app.get("/api/files", (req, res) => {
+    drive.getUser(req.user.user_id)
+    .then(data => {
+        console.log(data);
+        res.send(data);
+    });
+})
 
 const port = process.env.PORT || 1337;
 app.listen(port, () => console.log(`Example app listening on port ${port}!`));
-
-new drive();

@@ -1,6 +1,7 @@
 var async = require('async');
 const fs = require('fs');
 const readline = require('readline');
+const moment = require("moment");
 const {
     google
 } = require('googleapis');
@@ -10,38 +11,29 @@ const SCOPES = ['https://www.googleapis.com/auth/drive'];
 // created automatically when the authorization flow completes for the first
 // time.
 const TOKEN_PATH = 'token.json';
-
-// Load client secrets from a local file.
-fs.readFile('credentials.json', (err, content) => {
-    if (err) return console.log('Error loading client secret file:', err);
-    // Authorize a client with credentials, then call the Google Docs API.
-
-    //Doc io
-    authorize(JSON.parse(content), printDocTitle);
-    authorize(JSON.parse(content), getFiles);
-
-});
 /**
  * Create an OAuth2 client with the given credentials, and then execute the
  * given callback function.
  * @param {Object} credentials The authorization client credentials.
  * @param {function} callback The callback to call with the authorized client.
  */
-function authorize(credentials, callback) {
-    const {
-        client_secret,
-        client_id,
-        redirect_uris
-    } = credentials.installed;
-    const oAuth2Client = new google.auth.OAuth2(
-        client_id, client_secret, redirect_uris[0]);
+function authorize(credentials, callback, ...args) {
+    return new Promise((res, rej) => {
+        const {
+            client_secret,
+            client_id,
+            redirect_uris
+        } = credentials.installed;
+        const oAuth2Client = new google.auth.OAuth2(
+            client_id, client_secret, redirect_uris[0]);
 
-    // Check if we have previously stored a token.
-    fs.readFile(TOKEN_PATH, (err, token) => {
-        if (err) return getNewToken(oAuth2Client, callback);
-        oAuth2Client.setCredentials(JSON.parse(token));
-        callback(oAuth2Client);
-    });
+        // Check if we have previously stored a token.
+        fs.readFile(TOKEN_PATH, (err, token) => {
+            if (err) return getNewToken(oAuth2Client, callback);
+            oAuth2Client.setCredentials(JSON.parse(token));
+            res(callback(oAuth2Client, ...args));
+        });
+    })
 }
 /**
  * Get and store new token after prompting for user authorization, and then
@@ -76,7 +68,16 @@ function getNewToken(oAuth2Client, callback) {
 
 class Drive {
     constructor() {
-        authorize(this.getFiles);
+        this.credentials;
+        // Load client secrets from a local file.
+        fs.readFile('credentials.json', (err, content) => {
+            if (err) return console.log('Error loading client secret file:', err);
+            // Authorize a client with credentials, then call the Google Docs API.
+
+            //Doc io
+            const credentials = JSON.parse(content);
+            this.credentials = credentials;
+        });
     }
     /**
      * Prints the title of a sample doc:
@@ -96,47 +97,56 @@ class Drive {
         });
     }
 
-    getFiles(auth) {
-        // console.log("1");
-        // const docs = google.drive({version: 'v3', auth});
-        // docs.files.list({
-        // }, function (err, response) {
-        //     console.log("2");
-        //     console.log(err);
-        //     console.log(response);
-        //    // TODO handle response
-        // });
-
-        // console.log("3");
-
-        const drive = google.drive({
-            version: 'v3',
-            auth
-        });
-        const fileId = '1r-MQqFimUE4YuSezKg5-E7Zwy3QbT5Tt';
-        drive.files.list({
-            includeRemoved: false,
-            spaces: 'drive',
-            fileId: fileId,
-            fields: 'nextPageToken, files(id, name, parents, mimeType, modifiedTime)',
-            q: `'${fileId}' in parents`
-        }, function (err, resp) {
-            if (!err) {
-                var i;
-                console.log(resp.data.files);
-                var files = resp.data.files;
-                for (i = 0; i < files.length; i++) {
-                    if (files[i].mimeType !== 'application/vnd.google-apps.folder') {
-                        console.log('file: ' + files[i].name);
-                    } else {
-                        console.log('directory: ' + files[i].name);
-                    }
-                    console.log(files[i]);
+    getFiles(auth, folderId) {
+        return new Promise((res, rej) => {
+            const drive = google.drive({
+                version: 'v3',
+                auth
+            });
+            const fileId = folderId;
+            drive.files.list({
+                includeRemoved: false,
+                spaces: 'drive',
+                fileId: fileId,
+                fields: 'nextPageToken, files(id, name, parents, mimeType, modifiedTime)',
+                q: `'${fileId}' in parents and trashed = false`
+            }, function (err, resp) {
+                if (!err) {
+                    var i;
+                    res(resp.data.files);
+                } else {
+                    rej(err);
                 }
-            } else {
-                console.log('error: ', err);
-            }
-        });
+            });
+        })
+    }
+    getUser(userId) {
+        return new Promise((res, rej) => {
+            authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
+                .then(files => {
+                    //date is in rfc 3339
+                    //name, date, type, id
+                    let found = false;
+                    for (let i = 0; i < files.length; i++) {
+                        if (files[i].name === userId + "") {
+                            found = true;
+                            authorize(this.credentials, this.getFiles, files[i].id)
+                                .then(data => {
+                                    res(data.map(x => {
+                                        return {
+                                            id: x.id,
+                                            name: x.name,
+                                            date: moment(x.modifiedTime, "YYYY-MM-DDTHH:mm:ssZ").fromNow(),
+                                            type: "TODO"
+                                        }
+                                    }));
+                                })
+                        }
+                    }
+                    if(!found)
+                        res([]);
+                });
+        })
     }
 }
 module.exports = Drive;
