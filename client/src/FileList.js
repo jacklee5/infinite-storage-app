@@ -7,7 +7,7 @@ export default class FileList extends React.Component {
         super();
         this.handleFileClick = this.handleFileClick.bind(this);
         this.state = {
-            data: [],
+            data: undefined,
             activeIndex: -1
         }
     }

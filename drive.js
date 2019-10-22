@@ -120,7 +120,7 @@ class Drive {
             });
         })
     }
-    getUser(userId) {
+    getUserFiles(userId) {
         return new Promise((res, rej) => {
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
                 .then(files => {

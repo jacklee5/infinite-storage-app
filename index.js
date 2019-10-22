@@ -197,7 +197,7 @@ app.get("/api/isAuthenticated", (req, res) => {
     res.send(`${!!req.user}`);
 })
 app.get("/api/files", (req, res) => {
-    drive.getUser(req.user.user_id)
+    drive.getUserFiles(req.user.user_id)
     .then(data => {
         console.log(data);
         res.send(data);
