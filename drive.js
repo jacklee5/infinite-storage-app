@@ -86,36 +86,47 @@ class Drive {
      */
 
     fileRead(id){
+        //authorizes the reading of a file in hihi drive
         authorize(this.credentials, (auth) => {
+            //create drive object with authentification
             const drive = google.drive({
                 version: 'v3',
                 auth
             });
+            //gets file content
             drive.files.export({
                 'fileId' : id,
                 'mimeType' : 'text/plain',
             }).then(function(success){
+                //returns content as a string
                 console.log(success.data);
                 return success.data;
                 //success.result    
             }, function(fail){
+                //logs error message
                 console.log(fail);
                 console.log('Error '+ fail.result.error.message);
             })
         })
     }
 
-    fileWrite(title, data) {
+    fileWrite(title, data, folder) {
+        //authorizes the writing of a file in hihi drive
         authorize(this.credentials, (auth) => {
+            //create drive object with authentification
             const drive = google.drive({
                 version: 'v3',
                 auth
             });
+            //creates the file
             drive.files.create({
+                //metadata
                 requestBody: {
                     name: title,
-                    mimeType: 'application/vnd.google-apps.document'
+                    mimeType: 'application/vnd.google-apps.document',
+                    parents: folder
                 },
+                //content
                 media:{
                     mimeType:'text/plain',
                     body: data
@@ -124,6 +135,21 @@ class Drive {
         })
     }
 
+    fileDelete(id) {
+        authorize(this.credentials, (auth) => {
+            //create drive object with authentification
+            const drive = google.drive({
+                version: 'v3',
+                auth
+            });
+            //deletes the file
+            drive.files.delete({
+                'fileId': id
+            })
+        })
+    }
+
+    //test for authentification - prints title of a test document
     printDocTitle(auth) {
         const docs = google.docs({
             version: 'v1',
@@ -137,20 +163,25 @@ class Drive {
         });
     }
 
+    //returns all files in folder of folderId
     getFiles(auth, folderId) {
         return new Promise((res, rej) => {
+            //create drive object with authentification
             const drive = google.drive({
                 version: 'v3',
                 auth
             });
             const fileId = folderId;
+            //lists everything in the folder
             drive.files.list({
+                //criteria for things to search for
                 includeRemoved: false,
                 spaces: 'drive',
                 fileId: fileId,
                 fields: 'nextPageToken, files(id, name, parents, mimeType, modifiedTime)',
                 q: `'${fileId}' in parents and trashed = false`
             }, function (err, resp) {
+                //return errors
                 if (!err) {
                     var i;
                     res(resp.data.files);
@@ -162,22 +193,27 @@ class Drive {
     }
     getUserFiles(userId) {
         return new Promise((res, rej) => {
+            //authorizes the reading files in hihi drive
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
                 .then(files => {
                     //date is in rfc 3339
                     //name, date, type, id
                     let found = false;
 
-                    //this.fileRead('1Bqb_b0pOm_D7EO6SIQ7hqqAv3EJTTkJOTgru7ddp6Ew');
-                    //this.fileWrite('mitta mitta', 'haHAA');
+                    //usage of file manipulation stuff
+                    //this.fileRead('{Document ID}');
+                    //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
+                    //this.fileDelete('{Document ID}');
                     
                     for (let i = 0; i < files.length; i++) {
+                        //check for userId
                         if (files[i].name === userId + "") {
                             found = true;
                             authorize(this.credentials, this.getFiles, files[i].id)
                                 .then(data => {
                                     res(data.map(x => {
                                         return {
+                                            //return data of each file
                                             id: x.id,
                                             name: x.name,
                                             date: moment(x.modifiedTime, "YYYY-MM-DDTHH:mm:ssZ").fromNow(),
