@@ -84,6 +84,46 @@ class Drive {
      * https://docs.google.com/document/d/195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE/edit
      * @param {google.auth.OAuth2} auth The authenticated Google OAuth 2.0 client.
      */
+
+    fileRead(id){
+        authorize(this.credentials, (auth) => {
+            const drive = google.drive({
+                version: 'v3',
+                auth
+            });
+            drive.files.export({
+                'fileId' : id,
+                'mimeType' : 'text/plain',
+            }).then(function(success){
+                console.log(success.data);
+                return success.data;
+                //success.result    
+            }, function(fail){
+                console.log(fail);
+                console.log('Error '+ fail.result.error.message);
+            })
+        })
+    }
+
+    fileWrite(title, data) {
+        authorize(this.credentials, (auth) => {
+            const drive = google.drive({
+                version: 'v3',
+                auth
+            });
+            drive.files.create({
+                requestBody: {
+                    name: title,
+                    mimeType: 'application/vnd.google-apps.document'
+                },
+                media:{
+                    mimeType:'text/plain',
+                    body: data
+                }
+            })
+        })
+    }
+
     printDocTitle(auth) {
         const docs = google.docs({
             version: 'v1',
@@ -127,6 +167,10 @@ class Drive {
                     //date is in rfc 3339
                     //name, date, type, id
                     let found = false;
+
+                    //this.fileRead('1Bqb_b0pOm_D7EO6SIQ7hqqAv3EJTTkJOTgru7ddp6Ew');
+                    //this.fileWrite('mitta mitta', 'haHAA');
+                    
                     for (let i = 0; i < files.length; i++) {
                         if (files[i].name === userId + "") {
                             found = true;
