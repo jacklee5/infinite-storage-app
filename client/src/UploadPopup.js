@@ -9,16 +9,21 @@ export default class UploadPopup extends React.Component {
             canSubmit: false
         }
         this.fileChangeHandler = this.fileChangeHandler.bind(this);
+        this.clickHandler = this.clickHandler.bind(this);
     }
     clickHandler(e){
         e.preventDefault();
         if(!this.state.canSubmit) return;
         const el = document.getElementById("fileUpload");
         for(let i = 0; i < el.files.length; i++){
-            const file = e.files.files[i];
+            const file = el.files[i];
             const formData = new FormData();
             formData.append("file", file);
-            fetch('/upload/image', {method: "POST", body: formData});
+            console.log(formData);
+            fetch('/api/uploadFile', {method: "POST", body: formData})
+            .then(x => {
+                this.props.update();
+            });
         }
     }
     fileChangeHandler(e){

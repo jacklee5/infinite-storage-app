@@ -8,6 +8,8 @@ const cookieSession = require('cookie-session');
 const fs = require("fs");
 const sql = require("mssql");
 const bodyParser = require("body-parser");
+const multer  = require('multer')
+const upload = multer({ dest: 'uploads/' })
 const Drive = require('./drive.js');
 const drive = new Drive();
 
@@ -210,11 +212,13 @@ app.get("/api/createFolder", (req, res) => {
         .then(res.send("ok"));
     })
 })
-app.get("/api/createFile", (req, res) => {
+app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
-        drive.fileWrite("hubnubthefile", "insert content", id)
-        .then(res.send("ok"));
+        fs.readFile(req.file.path, (err, data) => {
+            drive.fileWrite(req.file.originalname, data + "", id)
+            .then(res.send("ok"));
+        })
     })
 })
 app.get("/api/logout", (req, res) => {
