@@ -199,9 +199,28 @@ app.get("/api/isAuthenticated", (req, res) => {
 app.get("/api/files", (req, res) => {
     drive.getUserFiles(req.user.user_id)
     .then(data => {
-        console.log(data);
+        console.log("/api/files")
         res.send(data);
     });
+});
+app.get("/api/createFolder", (req, res) => {
+    drive.getUserFolder(req.user.user_id)
+    .then(id => {
+        drive.createFolder("hubnub", id)
+        .then(res.send("ok"));
+    })
+})
+app.get("/api/createFile", (req, res) => {
+    drive.getUserFolder(req.user.user_id)
+    .then(id => {
+        drive.fileWrite("hubnubthefile", "insert content", id)
+        .then(res.send("ok"));
+    })
+})
+app.get("/api/logout", (req, res) => {
+    console.log("hubnub")
+    req.logout();
+    res.redirect("/");
 })
 
 const port = process.env.PORT || 1337;

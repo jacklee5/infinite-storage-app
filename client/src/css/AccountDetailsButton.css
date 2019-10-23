@@ -4,6 +4,7 @@
     padding: 8px 16px;
     transition: .3s all;
     display: block;
+    cursor: pointer;
 }
 .account-details-button span{
     display: inline-block;
