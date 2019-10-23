@@ -168,6 +168,26 @@ class Drive {
             })
         })
     }
+    //splits a string into sets of 2500000 characters
+    splitData(data) {
+        const part_length = 2500000;
+        var folder_size = Math.ceil(data.length / part_length);
+        var split_data = [];
+        for (let i = 0; i < folder_size - 1; i++) {
+            split_data.push(data.substring(i * part_length, (i + 1) * part_length));
+        }
+        split_data.push(data.substring((folder_size - 1) * part_length));
+        return split_data;
+    }
+
+    //combines the content of a list of documents
+    combineData(ids) {
+        var data = "";
+        for (let i = 0; i < ids.length; i++) {
+            data += fileRead(ids[i]);
+        }
+        return data;
+    }
 
     //test for authentification - prints title of a test document
     printDocTitle(auth) {
