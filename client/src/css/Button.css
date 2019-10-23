@@ -1,0 +1,15 @@
+.button{
+    padding: 8px 32px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 14px;
+    display: block;
+    text-align: center;
+    border: none;
+    width: 100%;
+    cursor: pointer;
+}
+.button:focus{
+    outline: none;
+}

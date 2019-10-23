@@ -34,7 +34,10 @@ export default class Header extends React.Component {
                 </div>
                 <AccountImage toggleAccountDetails = {this.toggleAccountDetails}></AccountImage>
                 <AccountDetails  visible = {this.state.accountDetailsVisible}>
-                    <AccountDetailsButton icon = "exit_to_app" text = "Sign out" action = "/logout"></AccountDetailsButton>
+                    <AccountDetailsButton icon = "exit_to_app" text = "Sign out" handler = {() => {
+                        fetch("/api/logout");
+                        window.location.reload();
+                    }}></AccountDetailsButton>
                 </AccountDetails>
             </header>
         )

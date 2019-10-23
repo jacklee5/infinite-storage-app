@@ -69,15 +69,9 @@ function getNewToken(oAuth2Client, callback) {
 class Drive {
     constructor() {
         this.credentials;
-        // Load client secrets from a local file.
-        fs.readFile('credentials.json', (err, content) => {
-            if (err) return console.log('Error loading client secret file:', err);
-            // Authorize a client with credentials, then call the Google Docs API.
-
-            //Doc io
-            const credentials = JSON.parse(content);
-            this.credentials = credentials;
-        });
+        const content = fs.readFileSync('credentials.json');
+        const credentials = JSON.parse(content);
+        this.credentials = credentials;
     }
     /**
      * Prints the title of a sample doc:
@@ -85,7 +79,7 @@ class Drive {
      * @param {google.auth.OAuth2} auth The authenticated Google OAuth 2.0 client.
      */
 
-    fileRead(id){
+    fileRead(id) {
         //authorizes the reading of a file in hihi drive
         authorize(this.credentials, (auth) => {
             //create drive object with authentification
@@ -95,42 +89,47 @@ class Drive {
             });
             //gets file content
             drive.files.export({
-                'fileId' : id,
-                'mimeType' : 'text/plain',
-            }).then(function(success){
+                'fileId': id,
+                'mimeType': 'text/plain',
+            }).then(function (success) {
                 //returns content as a string
                 console.log(success.data);
                 return success.data;
                 //success.result    
-            }, function(fail){
+            }, function (fail) {
                 //logs error message
                 console.log(fail);
-                console.log('Error '+ fail.result.error.message);
+                console.log('Error ' + fail.result.error.message);
             })
         })
     }
 
     fileWrite(title, data, folder) {
-        //authorizes the writing of a file in hihi drive
-        authorize(this.credentials, (auth) => {
-            //create drive object with authentification
-            const drive = google.drive({
-                version: 'v3',
-                auth
-            });
-            //creates the file
-            drive.files.create({
-                //metadata
-                requestBody: {
-                    name: title,
-                    mimeType: 'application/vnd.google-apps.document',
-                    parents: folder
-                },
-                //content
-                media:{
-                    mimeType:'text/plain',
-                    body: data
-                }
+        return new Promise((res, rej) => {
+            //authorizes the writing of a file in hihi drive
+            authorize(this.credentials, (auth) => {
+                //create drive object with authentification
+                const drive = google.drive({
+                    version: 'v3',
+                    auth
+                });
+                //creates the file
+                drive.files.create({
+                    //metadata
+                    requestBody: {
+                        name: title,
+                        mimeType: 'application/vnd.google-apps.document',
+                        parents: [folder]
+                    },
+                    //content
+                    media: {
+                        mimeType: 'text/plain',
+                        body: data
+                    }
+                }, (err, response) => {
+                    if(err) rej(err);
+                    res(true);
+                })
             })
         })
     }
@@ -147,6 +146,47 @@ class Drive {
                 'fileId': id
             })
         })
+    }
+
+    createFolder(title, parent) {
+        return new Promise((res, rej) => {
+            authorize(this.credentials, (auth) => {
+                const drive = google.drive({
+                    version: 'v3',
+                    auth
+                });
+                drive.files.create({
+                    requestBody: {
+                        name: title,
+                        mimeType: 'application/vnd.google-apps.folder',
+                        parents: [parent]
+                    },
+                }, (err, response) => {
+                    if (err) return rej(err);
+                    res(true);
+                });
+            })
+        })
+    }
+    //splits a string into sets of 2500000 characters
+    splitData(data) {
+        const part_length = 2500000;
+        var folder_size = Math.ceil(data.length / part_length);
+        var split_data = [];
+        for (let i = 0; i < folder_size - 1; i++) {
+            split_data.push(data.substring(i * part_length, (i + 1) * part_length));
+        }
+        split_data.push(data.substring((folder_size - 1) * part_length));
+        return split_data;
+    }
+
+    //combines the content of a list of documents
+    combineData(ids) {
+        var data = "";
+        for (let i = 0; i < ids.length; i++) {
+            data += fileRead(ids[i]);
+        }
+        return data;
     }
 
     //test for authentification - prints title of a test document
@@ -191,6 +231,28 @@ class Drive {
             });
         })
     }
+    getUserFolder(userId) {
+        return new Promise((res, rej) => {
+            authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
+                .then(files => {
+                    //date is in rfc 3339
+                    //name, date, type, id
+                    let found = false;
+
+                    //usage of file manipulation stuff
+                    //this.fileRead('{Document ID}');
+                    //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
+                    //this.fileDelete('{Document ID}');
+
+                    for (let i = 0; i < files.length; i++) {
+                        //check for userId
+                        if (files[i].name === userId + "") {
+                            res(files[i].id);
+                        }
+                    }
+                });
+        })
+    }
     getUserFiles(userId) {
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
@@ -204,7 +266,7 @@ class Drive {
                     //this.fileRead('{Document ID}');
                     //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
                     //this.fileDelete('{Document ID}');
-                    
+
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
@@ -223,7 +285,7 @@ class Drive {
                                 })
                         }
                     }
-                    if(!found)
+                    if (!found)
                         res([]);
                 });
         })
