@@ -155,19 +155,28 @@ class Drive {
                     version: 'v3',
                     auth
                 });
+
+                var fileMetadata = {
+                    name: title,
+                    mimeType: 'application/vnd.google-apps.folder',
+                    parents: [parent]
+                }
+
                 drive.files.create({
-                    requestBody: {
-                        name: title,
-                        mimeType: 'application/vnd.google-apps.folder',
-                        parents: [parent]
-                    },
+                    resource: fileMetadata,
+                    fields: 'id'
                 }, (err, response) => {
-                    if (err) return rej(err);
-                    res(true);
+                    if (err) {
+                        return rej(err);
+                    } else {
+                        console.log('1');
+                        res(response);
+                    }
                 });
             })
         })
     }
+
     //splits a string into sets of 2500000 characters
     splitData(data) {
         const part_length = 2500000;
