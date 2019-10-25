@@ -1,4 +1,5 @@
 import React from 'react';
+import UploadPopup from './UploadPopup';
 
 export default class CreateFileButton extends React.Component {
     constructor(){
@@ -55,6 +56,7 @@ export default class CreateFileButton extends React.Component {
                     <i className = "material-icons">
                         cloud_upload
                     </i>
+                    <UploadPopup update = {this.update}></UploadPopup>
                 </div>
                 {/* button button, add file */}
                 <div className = "floating-action-button-lg" onClick = {this.clickHandler}>

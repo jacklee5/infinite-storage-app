@@ -35,7 +35,7 @@ export default class UploadPopup extends React.Component {
     }
     render() {
         return (
-            this.state.visible ? (
+            this.props.visible ? (
                 <form className = "popup" encType="multipart/form-data" action="/api/createFile" method="post">
                     <h1>Upload a file</h1>
                     <input type="file" id="fileUpload" multiple size="50" onChange={this.fileChangeHandler}></input>

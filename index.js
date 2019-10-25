@@ -221,6 +221,7 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
         })
     })
 })
+
 app.get("/api/logout", (req, res) => {
     console.log("hubnub")
     req.logout();

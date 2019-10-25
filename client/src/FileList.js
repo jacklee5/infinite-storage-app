@@ -2,7 +2,6 @@ import React from 'react';
 import './css/FileList.css';
 import File from './File';
 import CreateFileButton from './CreateFileButton';
-import UploadPopup from './UploadPopup';
 
 export default class FileList extends React.Component {
     constructor(){
@@ -56,7 +55,6 @@ export default class FileList extends React.Component {
                 : "loading files"}
             </div>
             <CreateFileButton update = {this.update}></CreateFileButton>
-            <UploadPopup update = {this.update}></UploadPopup>
         </div>
         )
     }
