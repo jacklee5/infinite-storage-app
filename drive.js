@@ -80,28 +80,24 @@ class Drive {
      */
 
     fileRead(id) {
-        //authorizes the reading of a file in hihi drive
-        authorize(this.credentials, (auth) => {
-            //create drive object with authentification
-            const drive = google.drive({
-                version: 'v3',
-                auth
-            });
-            //gets file content
-            drive.files.export({
-                'fileId': id,
-                'mimeType': 'text/plain',
-            }).then(function (success) {
-                //returns content as a string
-                console.log(success.data);
-                return success.data;
-                //success.result    
-            }, function (fail) {
-                //logs error message
-                console.log(fail);
-                console.log('Error ' + fail.result.error.message);
+        return new Promise((res, rej) => {
+            //authorizes the reading of a file in hihi drive
+            authorize(this.credentials, (auth) => {
+                //create drive object with authentification
+                const drive = google.drive({
+                    version: 'v3',
+                    auth
+                });
+                //gets file content
+                drive.files.export({
+                    'fileId': id,
+                    'mimeType': 'text/plain',
+                }, (err, response) => {
+                    if(err) rej(err);
+                    res(response.data);
+                })
             })
-        })
+        });
     }
 
     fileWrite(title, data, folder) {
@@ -169,7 +165,6 @@ class Drive {
                     if (err) {
                         return rej(err);
                     } else {
-                        console.log('1');
                         res(response);
                     }
                 });
@@ -240,6 +235,27 @@ class Drive {
             });
         })
     }
+
+    readFolder(auth, folderId) {
+        return new Promise((res, rej) => {
+            authorize(this.credentials, this.getFiles, folderId)
+                .then(files => {
+                    var full = "";
+
+                    console.log(files);
+
+                    for (let i = 0; i < files.length; i++) {
+                        this.fileRead(files[i].id).then(result => {
+                            full += result.substring(1);
+                            console.log(files[i].id + "\n");
+                            console.log(result.substring(1) + "\n");
+                        })
+                    }
+                });
+        });
+    }
+
+
     getUserFolder(userId) {
         return new Promise((res, rej) => {
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
@@ -275,6 +291,10 @@ class Drive {
                     //this.fileRead('{Document ID}');
                     //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
                     //this.fileDelete('{Document ID}');
+                    this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
+                        console.log(full);
+                        console.log(full.length);
+                    })
 
                     for (let i = 0; i < files.length; i++) {
                         //check for userId

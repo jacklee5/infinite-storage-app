@@ -215,18 +215,18 @@ app.get("/api/createFolder", (req, res) => {
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
-        fs.readFile(req.file.path, (err, data) => {
+        //read the file and encode it in base 64
+        fs.readFile(req.file.path, "base64", (err, data) => {
+            //create the name of the folder
             title = req.file.originalname.replace(".", "&");
             drive.createFolder(title, id).then(file =>
                 {
+                    //split data and create files in the folder with the data
                     split_data = drive.splitData(data + "");
-        
+
                     for(let i = 0; i < split_data.length; i++) {
-                        console.log("1" + split_data[i]);
                         drive.fileWrite(i, split_data[i] + "", file.data.id)
                     }
-                    //drive.fileWrite(req.file.originalname, data + "", id)
-                    console.log("dinner")
                 }
             );
             
