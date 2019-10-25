@@ -227,6 +227,7 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
                     for(let i = 0; i < split_data.length; i++) {
                         drive.fileWrite(i, split_data[i] + "", file.data.id)
                     }
+                    
                 }
             );
             

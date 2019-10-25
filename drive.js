@@ -241,16 +241,13 @@ class Drive {
             authorize(this.credentials, this.getFiles, folderId)
                 .then(files => {
                     var full = "";
-
-                    console.log(files);
-
-                    for (let i = 0; i < files.length; i++) {
-                        this.fileRead(files[i].id).then(result => {
-                            full += result.substring(1);
-                            console.log(files[i].id + "\n");
-                            console.log(result.substring(1) + "\n");
-                        })
-                    }
+                    Promise.all(files.map(x => this.fileRead(x.id)))
+                    .then(values => {
+                        for(let i = 0; i < files.length; i++){
+                            full += values[i].substring(1);
+                        }
+                        res(full);
+                    })
                 });
         });
     }
@@ -292,8 +289,9 @@ class Drive {
                     //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
                     //this.fileDelete('{Document ID}');
                     this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
-                        console.log(full);
-                        console.log(full.length);
+                        //help
+                        const buf = Buffer.from(full, "base64");
+                        fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
                     })
 
                     for (let i = 0; i < files.length; i++) {

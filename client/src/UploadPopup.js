@@ -5,7 +5,6 @@ export default class UploadPopup extends React.Component {
     constructor(){
         super();
         this.state = {
-            visible: true,
             canSubmit: false
         }
         this.fileChangeHandler = this.fileChangeHandler.bind(this);
@@ -13,6 +12,7 @@ export default class UploadPopup extends React.Component {
     }
     clickHandler(e){
         e.preventDefault();
+        e.stopPropagation();
         if(!this.state.canSubmit) return;
         const el = document.getElementById("fileUpload");
         for(let i = 0; i < el.files.length; i++){
@@ -35,14 +35,12 @@ export default class UploadPopup extends React.Component {
     }
     render() {
         return (
-            this.props.visible ? (
-                <form className = "popup" encType="multipart/form-data" action="/api/createFile" method="post">
-                    <h1>Upload a file</h1>
-                    <input type="file" id="fileUpload" multiple size="50" onChange={this.fileChangeHandler}></input>
-                    <br></br><br></br>
-                    <Button disabled = {!this.state.canSubmit} text = "upload" style = {{width: "100%"}} handler = {this.clickHandler}></Button>
-                </form >
-            ) : null
+            <form className = "popup" encType="multipart/form-data" action="/api/createFile" method="post" onClick = {(e) => e.stopPropagation()}>
+                <h1>Upload a file</h1>
+                <input type="file" id="fileUpload" multiple size="50" onChange={this.fileChangeHandler}></input>
+                <br></br><br></br>
+                <Button disabled = {!this.state.canSubmit} text = "upload" style = {{width: "100%"}} handler = {this.clickHandler}></Button>
+            </form >
         )
     }
 }
