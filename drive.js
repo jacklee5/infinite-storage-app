@@ -311,6 +311,11 @@ class Drive {
                     //this.fileDelete('{Document ID}');
                     this.assembleFile("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ");
                     
+                    // this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
+                    //     //help
+                    //     const buf = Buffer.from(full, "base64");
+                    //     fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
+                    // })
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
