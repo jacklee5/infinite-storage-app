@@ -223,11 +223,15 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
                 {
                     //split data and create files in the folder with the data
                     split_data = drive.splitData(data + "");
-
-                    for(let i = 0; i < split_data.length; i++) {
-                        drive.fileWrite(i, split_data[i] + "", file.data.id)
-                    }
-                    
+                    const WAIT_TIME = 300;
+                    let cur = 0;
+                    const int = setInterval(() => {
+                        console.log(cur);
+                        if(cur === split_data.length)
+                            clearInterval(int);
+                        drive.fileWrite(cur, split_data[cur] + "", file.data.id);
+                        cur++;
+                    }, WAIT_TIME);
                 }
             );
             
