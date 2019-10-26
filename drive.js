@@ -197,16 +197,24 @@ class Drive {
     }
 
     //test for authentification - prints title of a test document
-    printDocTitle(auth) {
-        const docs = google.docs({
-            version: 'v1',
-            auth
-        });
-        docs.documents.get({
-            documentId: '195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE',
-        }, (err, res) => {
-            if (err) return console.log('The API returned an error: ' + err);
-            console.log(`The title of the document is: ${res.data.title}`);
+    printDocTitle(id) {
+        return new Promise((res, rej) => {
+            //authorizes the reading of a file in hihi drive
+            authorize(this.credentials, (auth) => {
+                //create drive object with authentification
+                const drive = google.drive({
+                    version: 'v3',
+                    auth
+                });
+                //gets file content
+                drive.files.get({
+                    'fileId': id,
+                    'mimeType': 'application/vnd.google-apps.folder',
+                }, (err, response) => {
+                    if(err) rej(err);
+                    res(response.data.name);
+                })
+            })
         });
     }
 
@@ -291,6 +299,19 @@ class Drive {
                 });
         })
     }
+
+    //puts the files together
+    assembleFile(id) {
+        this.readFolder(id, id).then(full => {
+            //puts base64 of the assembles parts of the folder into a buffer
+            const buf = Buffer.from(full, "base64");
+            this.printDocTitle(id).then(ret => {
+                //writes the file
+                fs.writeFile(ret.replace("&", "."), buf, ()=>{console.log("gmaershelpgamers")});
+            })
+        })
+    }
+
     getUserFiles(userId) {
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
@@ -304,13 +325,13 @@ class Drive {
                     //this.fileRead('{Document ID}');
                     //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
                     //this.fileDelete('{Document ID}');
+                    this.assembleFile("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ");
                     
-                    this.readFolder(this.credentials, "151w0NJNWUjsOxbuPCkBgFugdDOq_quLi").then(full => {
-                        //help
-                        const buf = Buffer.from(full, "base64");
-                        fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
-                    })
-
+                    // this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
+                    //     //help
+                    //     const buf = Buffer.from(full, "base64");
+                    //     fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
+                    // })
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
