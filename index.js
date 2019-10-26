@@ -213,6 +213,8 @@ app.get("/api/createFolder", (req, res) => {
     })
 })
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
+    console.log("started uploading");
+    drive.fileWrite("test", "tets", "10RbK_NNiS6vchjKnSAJocG7baDx6zIj3")
     drive.getUserFolder(req.user.user_id)
     .then(id => {
         //read the file and encode it in base 64
@@ -223,13 +225,21 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
                 {
                     //split data and create files in the folder with the data
                     split_data = drive.splitData(data + "");
-                    const WAIT_TIME = 300;
+                    const WAIT_TIME = 500;
+                    let done = 0;
                     let cur = 0;
                     const int = setInterval(() => {
-                        console.log(cur);
                         if(cur === split_data.length)
-                            clearInterval(int);
-                        drive.fileWrite(cur, split_data[cur] + "", file.data.id);
+                            return clearInterval(int);
+                        drive.fileWrite(cur + "", split_data[cur] + "", file.data.id)
+                        .then(x => {
+                            done++;
+                            console.log("uploading: " + (done*100/split_data.length) + "%");
+                        })
+                        .catch(x => {
+                            drive.fileWrite(x.title, x.data, x.folder);
+                            console.log(x);
+                        })
                         cur++;
                     }, WAIT_TIME);
                 }

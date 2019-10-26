@@ -123,7 +123,10 @@ class Drive {
                         body: data
                     }
                 }, (err, response) => {
-                    if(err) rej(err);
+                    if(err) {
+                        console.error("error: " + JSON.stringify(err.code));
+                        rej({title: title, data: data, folder: folder});
+                    }
                     res(true);
                 })
             })
@@ -174,7 +177,7 @@ class Drive {
 
     //splits a string into sets of 2500000 characters
     splitData(data) {
-        const part_length = 2500000;
+        const part_length = 100000;
         var folder_size = Math.ceil(data.length / part_length);
         var split_data = [];
         for (let i = 0; i < folder_size - 1; i++) {
@@ -241,7 +244,20 @@ class Drive {
             authorize(this.credentials, this.getFiles, folderId)
                 .then(files => {
                     var full = "";
-                    Promise.all(files.map(x => this.fileRead(x.id)))
+                    files.sort((a, b) => {
+                        return Number(a.name) - Number(b.name);
+                    })
+                    Promise.all(files.map((x, i) => {
+                        console.log(x.name);
+                        return new Promise((res, rej) => {
+                            setTimeout(() => {
+                                this.fileRead(x.id)
+                                .then(d => {
+                                    res(d);
+                                });
+                            }, i * 500);
+                        });
+                    }))
                     .then(values => {
                         for(let i = 0; i < files.length; i++){
                             full += values[i].substring(1);
@@ -289,11 +305,11 @@ class Drive {
                     //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
                     //this.fileDelete('{Document ID}');
                     
-                    // this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
-                    //     //help
-                    //     const buf = Buffer.from(full, "base64");
-                    //     fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
-                    // })
+                    this.readFolder(this.credentials, "151w0NJNWUjsOxbuPCkBgFugdDOq_quLi").then(full => {
+                        //help
+                        const buf = Buffer.from(full, "base64");
+                        fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
+                    })
 
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
