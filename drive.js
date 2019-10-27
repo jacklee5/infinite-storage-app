@@ -124,7 +124,7 @@ class Drive {
                     }
                 }, (err, response) => {
                     if(err) {
-                        console.error("error: " + JSON.stringify(err.code));
+                        console.error("error: " + err);
                         rej({title: title, data: data, folder: folder});
                     }
                     res(true);
@@ -307,7 +307,7 @@ class Drive {
             const buf = Buffer.from(full, "base64");
             this.printDocTitle(id).then(ret => {
                 //writes the file
-                fs.writeFile(this.prepName(ret), buf, ()=>{console.log("gmaershelpgamers")});
+                fs.writeFile(this.undoName(ret), buf, ()=>{console.log("gmaershelpgamers")});
             })
         })
     }
@@ -333,6 +333,8 @@ class Drive {
                     //date is in rfc 3339
                     //name, date, type, id
                     let found = false;
+
+                    //this.assembleFile("1rXd6SpfLrqT39_8L_V1_tjvDzyvXvqAp");
                     
                     for (let i = 0; i < files.length; i++) {
                         //check for userId

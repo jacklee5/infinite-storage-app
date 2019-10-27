@@ -212,6 +212,9 @@ app.get("/api/createFolder", (req, res) => {
         //.then(res.send("ok"));
     })
 })
+
+let done = 0;
+
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     console.log("started uploading");
     drive.fileWrite("test", "tets", "10RbK_NNiS6vchjKnSAJocG7baDx6zIj3")
@@ -226,7 +229,7 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
                     //split data and create files in the folder with the data
                     split_data = drive.splitData(data + "");
                     const WAIT_TIME = 500;
-                    let done = 0;
+                    done = 0;
                     let cur = 0;
                     const int = setInterval(() => {
                         if(cur === split_data.length)
@@ -237,17 +240,30 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
                             console.log("uploading: " + (done*100/split_data.length) + "%");
                         })
                         .catch(x => {
-                            drive.fileWrite(x.title, x.data, x.folder);
-                            console.log(x);
+                            console.log("Retrying file " + (done + 1) + "/" + split_data.length);
+                            retry(x);
                         })
                         cur++;
                     }, WAIT_TIME);
                 }
             );
-            
         })
     })
 })
+
+function retry (x) {
+    drive.fileWrite(x.title, x.data, x.folder)
+    .then(y => {
+        done++;
+        console.log("uploading: " + (done*100/split_data.length) + "%");
+    })
+    .catch(y => {
+        setTimeout(function () {
+            console.log("Retrying file " + (done + 1) + "/" + split_data.length);
+            retry(y);
+        }, 2000);
+    })
+}
 
 app.get("/api/logout", (req, res) => {
     console.log("hubnub")
