@@ -208,8 +208,8 @@ app.get("/api/files", (req, res) => {
 app.get("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
-        drive.createFolder("hubnub", id)
-        .then(res.send("ok"));
+        //drive.createFolder("hubnub", id)
+        //.then(res.send("ok"));
     })
 })
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
@@ -220,7 +220,7 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
         //read the file and encode it in base 64
         fs.readFile(req.file.path, "base64", (err, data) => {
             //create the name of the folder
-            title = req.file.originalname.replace(".", "&");
+            title = drive.prepName(req.file.originalname);
             drive.createFolder(title, id).then(file =>
                 {
                     //split data and create files in the folder with the data

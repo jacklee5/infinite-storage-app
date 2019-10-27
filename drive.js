@@ -150,17 +150,20 @@ class Drive {
     createFolder(title, parent) {
         return new Promise((res, rej) => {
             authorize(this.credentials, (auth) => {
+                //create drive object with authentification
                 const drive = google.drive({
                     version: 'v3',
                     auth
                 });
 
+                //create metadata of folder
                 var fileMetadata = {
                     name: title,
                     mimeType: 'application/vnd.google-apps.folder',
                     parents: [parent]
                 }
 
+                //create file
                 drive.files.create({
                     resource: fileMetadata,
                     fields: 'id'
@@ -175,7 +178,7 @@ class Drive {
         })
     }
 
-    //splits a string into sets of 2500000 characters
+    //splits a string into sets of 100000 characters
     splitData(data) {
         const part_length = 100000;
         var folder_size = Math.ceil(data.length / part_length);
@@ -252,9 +255,11 @@ class Drive {
             authorize(this.credentials, this.getFiles, folderId)
                 .then(files => {
                     var full = "";
+                    //sort files in folder by name
                     files.sort((a, b) => {
                         return Number(a.name) - Number(b.name);
                     })
+                    //reads all of the files
                     Promise.all(files.map((x, i) => {
                         console.log(x.name);
                         return new Promise((res, rej) => {
@@ -285,11 +290,6 @@ class Drive {
                     //name, date, type, id
                     let found = false;
 
-                    //usage of file manipulation stuff
-                    //this.fileRead('{Document ID}');
-                    //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
-                    //this.fileDelete('{Document ID}');
-
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
@@ -307,9 +307,22 @@ class Drive {
             const buf = Buffer.from(full, "base64");
             this.printDocTitle(id).then(ret => {
                 //writes the file
-                fs.writeFile(ret.replace("&", "."), buf, ()=>{console.log("gmaershelpgamers")});
+                fs.writeFile(this.prepName(ret), buf, ()=>{console.log("gmaershelpgamers")});
             })
         })
+    }
+
+    //replaces the last instance of "." with "&"
+    prepName(org) {
+        console.log(org)
+        console.log(org.lastIndexOf("."));
+        var pos = org.lastIndexOf(".");
+        return org.substring(0, pos) + "&" + org.substring(pos + 1);
+    }
+
+    //undos what prepName does
+    undoName(org) {
+        return org.replace("&", ".");
     }
 
     getUserFiles(userId) {
@@ -320,18 +333,7 @@ class Drive {
                     //date is in rfc 3339
                     //name, date, type, id
                     let found = false;
-
-                    //usage of file manipulation stuff
-                    //this.fileRead('{Document ID}');
-                    //this.fileWrite('{Document Name}', '{Document Title}', {Parent Folder}[]);
-                    //this.fileDelete('{Document ID}');
-                    this.assembleFile("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ");
                     
-                    // this.readFolder("1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ", "1FCjYUQ-TeCZyw1jvdQ6_KKnPA4LYKpwZ").then(full => {
-                    //     //help
-                    //     const buf = Buffer.from(full, "base64");
-                    //     fs.writeFile("fish.jpg", buf, ()=>{console.log("gmaershelpgamers")});
-                    // })
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
@@ -342,9 +344,9 @@ class Drive {
                                         return {
                                             //return data of each file
                                             id: x.id,
-                                            name: x.name,
+                                            name: this.undoName(x.name),
                                             date: moment(x.modifiedTime, "YYYY-MM-DDTHH:mm:ssZ").fromNow(),
-                                            type: "TODO"
+                                            type: x.name.substring(x.name.lastIndexOf("&") + 1)
                                         }
                                     }));
                                 })
