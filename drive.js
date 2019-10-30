@@ -342,7 +342,7 @@ class Drive {
                     //name, date, type, id
                     let found = false;
 
-                    this.assembleFile("1rXd6SpfLrqT39_8L_V1_tjvDzyvXvqAp");
+                    //this.assembleFile("1rXd6SpfLrqT39_8L_V1_tjvDzyvXvqAp");
                     
                     for (let i = 0; i < files.length; i++) {
                         //check for userId

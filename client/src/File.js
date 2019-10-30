@@ -2,6 +2,7 @@ import React from 'react';
 import './css/File.css';
 
 export default class File extends React.Component {
+
     render(){
         const style = this.props.active ? {background: "#BBDEFB"} : null;
         return (
