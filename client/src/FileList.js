@@ -12,13 +12,21 @@ export default class FileList extends React.Component {
             data: undefined,
             activeIndex: -1
         }
+        this.last_click = 0;
     }
     componentDidMount(){
         this.update();
     }
     handleFileClick(event, element){
+        console.log("hihi");
+        console.log(this.last_click);
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
+        if (Date.now() - this.last_click < 500) {
+            ///api/getFile/3
+            fetch("/api/getFile/" + this.state.data[element.props.index].id);
+        }
+        this.last_click = Date.now();
     }
     update(){
         window.addEventListener("click", () => {

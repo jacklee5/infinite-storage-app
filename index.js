@@ -211,7 +211,11 @@ app.get("/api/createFolder", (req, res) => {
         //drive.createFolder("hubnub", id)
         //.then(res.send("ok"));
     })
-})
+});
+
+app.get("/api/getFile/:id", (req, res) => {
+    drive.assembleFile(req.params.id);
+});
 
 let done = 0;
 
