@@ -1,3 +1,4 @@
+
 var async = require('async');
 const fs = require('fs');
 const readline = require('readline');
@@ -93,7 +94,14 @@ class Drive {
                     'fileId': id,
                     'mimeType': 'text/plain',
                 }, (err, response) => {
-                    if(err) rej(err);
+                    if(err) {
+                        console.log(err);
+                        setTimeout( () => {
+                            console.log(y);
+                            console.log("retrying");
+                            res(this.fileRead(id));
+                        }, 2000);
+                    };
                     res(response.data);
                 })
             })
@@ -334,7 +342,7 @@ class Drive {
                     //name, date, type, id
                     let found = false;
 
-                    //this.assembleFile("1rXd6SpfLrqT39_8L_V1_tjvDzyvXvqAp");
+                    this.assembleFile("1rXd6SpfLrqT39_8L_V1_tjvDzyvXvqAp");
                     
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
