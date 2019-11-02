@@ -3,6 +3,8 @@ var async = require('async');
 const fs = require('fs');
 const readline = require('readline');
 const moment = require("moment");
+const path = require("path");
+const mkdirp = require("mkdirp");
 const {
     google
 } = require('googleapis');
@@ -340,14 +342,21 @@ class Drive {
 
     //puts the files together
     assembleFile(id) {
-        this.readFolder(id, id).then(full => {
-            //puts base64 of the assembles parts of the folder into a buffer
-            const buf = Buffer.from(full, "base64");
-            this.printDocTitle(id).then(ret => {
-                //writes the file
-                fs.writeFile(this.undoName(ret), buf, ()=>{console.log("gmaershelpgamers")});
+        return new Promise((res, rej) => {
+            this.readFolder(id, id).then(full => {
+                //puts base64 of the assembles parts of the folder into a buffer
+                const buf = Buffer.from(full, "base64");
+                this.printDocTitle(id).then(ret => {
+                    const name = this.undoName(ret);
+                    //writes the file
+                    const dir = path.join("files", id, name);
+                    mkdirp(path.dirname(dir), (err) => {
+                        fs.writeFile(path.join("files", id, name), buf, ()=>{res("done")});
+                    })
+                })
             })
         })
+        
     }
 
     //replaces the last instance of "." with "&"

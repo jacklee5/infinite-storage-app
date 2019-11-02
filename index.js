@@ -214,7 +214,13 @@ app.get("/api/createFolder", (req, res) => {
 });
 
 app.get("/api/getFile/:id", (req, res) => {
-    drive.assembleFile(req.params.id);
+    drive.assembleFile(req.params.id)
+    .then(x => {
+        fs.readdir("files/" + req.params.id, (err, files) => {
+            const name = files[0];
+            res.download(__dirname + "/files/" + req.params.id + "/" + name);
+        })
+    })
 });
 
 let done = 0;

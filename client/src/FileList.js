@@ -24,7 +24,7 @@ export default class FileList extends React.Component {
         this.setState({activeIndex: element.props.index});
         if (Date.now() - this.last_click < 500) {
             ///api/getFile/3
-            fetch("/api/getFile/" + this.state.data[element.props.index].id);
+            window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
         }
         this.last_click = Date.now();
     }
