@@ -8,6 +8,8 @@ export default class FileList extends React.Component {
         super();
         this.update = this.update.bind(this);
         this.handleFileClick = this.handleFileClick.bind(this);
+        this.dlfile = this.dlfile.bind(this);
+        this.delfile = this.delfile.bind(this);
         this.state = {
             data: undefined,
             activeIndex: -1
@@ -27,6 +29,16 @@ export default class FileList extends React.Component {
             window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
         }
         this.last_click = Date.now();
+    }
+    dlfile(event, element) {
+        event.stopPropagation();
+        this.setState({activeIndex: element.props.index});
+        window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
+    }
+    delfile(event, element) {
+        event.stopPropagation();
+        this.setState({activeIndex: element.props.index});
+        fetch("/api/delFile/" + this.state.data[element.props.index].id)
     }
     update(){
         window.addEventListener("click", () => {
@@ -58,6 +70,8 @@ export default class FileList extends React.Component {
                         key = {x.id}
                         index = {i}
                         active = {i === this.state.activeIndex}
+                        dlfile = {this.dlfile}
+                        delfile = {this.delfile}
                     ></File>)
                 }) 
                 : "loading files"}

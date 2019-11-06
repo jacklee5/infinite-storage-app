@@ -223,6 +223,11 @@ app.get("/api/getFile/:id", (req, res) => {
     })
 });
 
+app.get("/api/delFile/:id", (req, res) => {
+    console.log("edc");
+    drive.fileDelete(req.params.id);
+})
+
 let done = 0;
 
 //writeFolder
