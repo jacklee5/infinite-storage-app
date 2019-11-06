@@ -19,10 +19,13 @@ export default class File extends React.Component {
                         </tbody>
                     </table>
                 </ContextMenuTrigger>
-                <ContextMenu id = {this.props.data.id + "id"}>
-                    <MenuItem onClick={(e) => {this.props.dlfile(e, this)}}>Download</MenuItem>
-                    <MenuItem onClick={(e) => {this.props.delfile(e, this)}}>Delete</MenuItem>
-                </ContextMenu>
+                <div className = "rightClickMenu">
+                    <ContextMenu id = {this.props.data.id + "id"}>
+                        <MenuItem onClick={(e) => {this.props.dlfile(e, this)}}>Download</MenuItem>
+                        <MenuItem divider />
+                        <MenuItem onClick={(e) => {this.props.delfile(e, this)}}>Delete</MenuItem>
+                    </ContextMenu>
+                </div>
             </div>
             
         )

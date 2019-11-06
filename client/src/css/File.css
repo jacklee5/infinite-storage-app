@@ -11,3 +11,29 @@
     padding: 8px;
     box-sizing: border-box;
 }
+
+.react-contextmenu {
+    background-color: #D6DAF0;
+    border: 1px solid rgba(0,0,0,.50);
+    border-radius: .40rem;
+    font-size: 16px;
+    margin: 2px 0 0;
+    min-width: 109px;
+    padding: 5px 0;
+    text-align: left;
+    transition: opacity 150ms ease !important;
+}
+
+.react-contextmenu-item {
+    color: #343434;
+	cursor: pointer;
+    padding: 3px 17px;
+}
+
+.react-contextmenu-item.react-contextmenu-item--active,
+.react-contextmenu-item.react-contextmenu-item--selected {
+    color: #ffffff;
+    background-color: #20a0ff;
+    border-color: #20a0ff;
+    text-decoration: none;
+}
