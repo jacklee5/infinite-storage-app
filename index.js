@@ -219,9 +219,9 @@ app.get("/api/getFile/:id", (req, res) => {
 
 let done = 0;
 
-//writeFolder
+//writeFoldery
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
-    writeFolder(req);
+    drive.writeFolder(req);
 })
 
 function retry (x) {

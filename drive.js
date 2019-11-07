@@ -291,20 +291,20 @@ class Drive {
 
     writeFolder(req) {
         console.log("started uploading");
-        drive.getUserFolder(req.user.user_id)
+        this.getUserFolder(req.user.user_id)
         .then(id => {
             var stack = [];
             fs.readFile(req.file.path, "base64", (err, data) => {
-                title = drive.prepName(req.file.originalname);
-                drive.createFolder(title, id).then(file => {
-                    split_data = drive.splitData(data + "");
+                let title = this.prepName(req.file.originalname);
+                this.createFolder(title, id).then(file => {
+                    let split_data = this.splitData(data + "");
                     const WAIT_TIME = 500;
-                    done = 0;
+                    let done = 0;
                     let cur = 0;
                     const int = setInterval(() => {
                         if(cur === split_data.length)
                             return clearInterval(int);
-                        drive.fileWrite(cur + "", split_data[cur] + "", file.data.id)
+                        this.fileWrite(cur + "", split_data[cur] + "", file.data.id)
                         .then(x => {
                             done++;
                             console.log("uploading: " + (done*100/split_data.length) + "%");
@@ -334,6 +334,10 @@ class Drive {
                             res(files[i].id);
                         }
                     }
+
+                    if(!found)
+                        this.createFolder(userId + "", "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
+                        .then(x => res(x));
                 });
         })
     }
