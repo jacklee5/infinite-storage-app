@@ -223,14 +223,20 @@ app.get("/api/getFile/:id", (req, res) => {
 });
 
 app.get("/api/delFile/:id", (req, res) => {
-    drive.fileDelete(req.params.id);
+    drive.fileDelete(req.params.id)
+    .then(x=> {
+        res.send("deleted");
+    });
 })
 
 let done = 0;
 
-//writeFolder
+//writeFoldery
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
-    writeFolder(req);
+    drive.writeFolder(req)
+    .then (x => {
+        res("uploaded");
+    })
 })
 
 function retry (x) {

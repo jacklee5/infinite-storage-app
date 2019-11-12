@@ -38,6 +38,9 @@ export default class FileList extends React.Component {
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
         fetch("/api/delFile/" + this.state.data[element.props.index].id)
+        .then(x => {
+            this.update();
+        })
     }
     update(){
         window.addEventListener("click", () => {

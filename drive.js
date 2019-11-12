@@ -144,17 +144,19 @@ class Drive {
     }
 
     fileDelete(id) {
-        authorize(this.credentials, (auth) => {
-            //create drive object with authentification
-            const drive = google.drive({
-                version: 'v3',
-                auth
-            });
-            //deletes the file
-            drive.files.delete({
-                'fileId': id
+        return new Promise((res, rej) => {
+            authorize(this.credentials, (auth) => {
+                //create drive object with authentification
+                const drive = google.drive({
+                    version: 'v3',
+                    auth
+                });
+                //deletes the file
+                drive.files.delete({
+                    'fileId': id
+                })
             })
-        })
+        });
     }
 
     createFolder(title, parent) {
@@ -292,31 +294,33 @@ class Drive {
     }
 
     writeFolder(req) {
-        console.log("started uploading");
-        drive.getUserFolder(req.user.user_id)
-        .then(id => {
-            var stack = [];
-            fs.readFile(req.file.path, "base64", (err, data) => {
-                title = drive.prepName(req.file.originalname);
-                drive.createFolder(title, id).then(file => {
-                    split_data = drive.splitData(data + "");
-                    const WAIT_TIME = 500;
-                    done = 0;
-                    let cur = 0;
-                    const int = setInterval(() => {
-                        if(cur === split_data.length)
-                            return clearInterval(int);
-                        drive.fileWrite(cur + "", split_data[cur] + "", file.data.id)
-                        .then(x => {
-                            done++;
-                            console.log("uploading: " + (done*100/split_data.length) + "%");
-                        }) 
-                        .catch(x => {
-                            console.log("Retrying file " + (done + 1) + "/" + split_data.length);
-                            CustomElementRegistry(x);
-                        })   
-                        cur++;
-                    }, WAIT_TIME);
+        return new Promise ((res, rej) => {
+            console.log("started uploading");
+            this.getUserFolder(req.user.user_id)
+            .then(id => {
+                var stack = [];
+                fs.readFile(req.file.path, "base64", (err, data) => {
+                    var title = this.prepName(req.file.originalname);
+                    this.createFolder(title, id).then(file => {
+                        var split_data = this.splitData(data + "");
+                        const WAIT_TIME = 500;
+                        var done = 0;
+                        let cur = 0;
+                        const int = setInterval(() => {
+                            if(cur === split_data.length)
+                                return clearInterval(int);
+                           this.fileWrite(cur + "", split_data[cur] + "", file.data.id)
+                            .then(x => {
+                                done++;
+                                console.log("uploading: " + (done*100/split_data.length) + "%");
+                            }) 
+                            .catch(x => {
+                                console.log("Retrying file " + (done + 1) + "/" + split_data.length);
+                                CustomElementRegistry(x);
+                            })   
+                            cur++;
+                        }, WAIT_TIME);
+                    })
                 })
             })
         })
@@ -336,6 +340,10 @@ class Drive {
                             res(files[i].id);
                         }
                     }
+
+                    if(!found)
+                        this.createFolder(userId + "", "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
+                        .then(x => res(x));
                 });
         })
     }
