@@ -1,8 +1,28 @@
 import React from 'react';
 import './css/File.css';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
+import img from './piccypics/Picture.png'
+import mov from './piccypics/Movie.gif'
+import oth from './piccypics/Folder.png'
 
 export default class File extends React.Component {
+
+    constructor(){
+        super();
+        this.choosePicture = this.choosePicture.bind(this);
+    }
+    
+    choosePicture(check) {
+        const images = ["jpg", "jpeg", "tiff", "gif", "bmp", "png", "svg", "pdn", "sai", "psd", "ai"];
+        const videos = ["webm", "avi", "mov", "mp4", "m4v", "3gp", "flv", "swf"];
+        if (images.indexOf(check.toLowerCase()) != -1) {
+            return img;
+        } else if (videos.indexOf(check.toLowerCase()) != -1) {
+            return mov;
+        } else {
+            return oth;
+        }
+    }
 
     render(){
         const style = this.props.active ? {background: "#BBDEFB"} : null;
@@ -14,7 +34,9 @@ export default class File extends React.Component {
                             <tr>
                                 <td style = {{width: "40%"}}>{this.props.data.name}</td>
                                 <td style = {{width: "30%"}}>{this.props.data.date}</td>
-                                <td style = {{width: "30%"}}>{this.props.data.type}</td>
+                                <td style = {{width: "7%"}}>{this.props.data.type}</td>
+                                <td style = {{width: "23%"}}><img src={this.choosePicture(this.props.data.type)} align= "right" style={{width: "100%", height: "100%", maxWidth: "30px", maxHeight: "30px"}}></img></td>
+
                             </tr>
                         </tbody>
                     </table>
