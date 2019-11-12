@@ -156,7 +156,6 @@ app.get("/", isUserAuthenticated, (req, res) => {
 
 // Logout route
 app.get("/logout", (req, res) => {
-    console.log("hi")
     req.logout(); 
     res.redirect('/');
 });
@@ -224,7 +223,6 @@ app.get("/api/getFile/:id", (req, res) => {
 });
 
 app.get("/api/delFile/:id", (req, res) => {
-    console.log("edc");
     drive.fileDelete(req.params.id);
 })
 
@@ -250,7 +248,6 @@ function retry (x) {
 }
 
 app.get("/api/logout", (req, res) => {
-    console.log("hubnub")
     req.logout();
     res.redirect("/");
 })
