@@ -205,11 +205,11 @@ app.get("/api/files", (req, res) => {
         res.send(data);
     });
 });
-app.get("/api/createFolder", (req, res) => {
+app.post("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
-        //drive.createFolder("hubnub", id)
-        //.then(res.send("ok"));
+        drive.createFolder(req.body.title + "&folder", id)
+        .then(res.send("ok"));
     })
 })
 
@@ -220,6 +220,7 @@ app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.fileWrite("test", "tets", "10RbK_NNiS6vchjKnSAJocG7baDx6zIj3")
     drive.getUserFolder(req.user.user_id)
     .then(id => {
+        res.send("ok");
         //read the file and encode it in base 64
         fs.readFile(req.file.path, "base64", (err, data) => {
             //create the name of the folder

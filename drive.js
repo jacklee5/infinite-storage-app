@@ -346,7 +346,7 @@ class Drive {
                                         return {
                                             //return data of each file
                                             id: x.id,
-                                            name: this.undoName(x.name),
+                                            name: this.undoName(x.name).substring(0, x.name.lastIndexOf("&")),
                                             date: moment(x.modifiedTime, "YYYY-MM-DDTHH:mm:ssZ").fromNow(),
                                             type: x.name.substring(x.name.lastIndexOf("&") + 1)
                                         }

@@ -1,5 +1,6 @@
 import React from 'react';
 import UploadPopup from './UploadPopup';
+import FolderPopup from './FolderPopup'
 
 export default class CreateFileButton extends React.Component {
     constructor(){
@@ -7,15 +8,16 @@ export default class CreateFileButton extends React.Component {
         //if upload true, upload button, if upload false, close button
         this.state = {
             upload: true,
-            uploadPopupVisible: false
+            popup: "none"
         }
         this.clickHandler = this.clickHandler.bind(this);
+        this.hide = this.hide.bind(this);
     }
     componentDidMount(){
         window.addEventListener("click", (e) => {
             if(!this.state.upload)
                 this.setState({upload: true});
-            this.setState({uploadPopupVisible: false})
+            this.setState({popup: "none"})
         });
     }
     clickHandler(e){
@@ -23,8 +25,10 @@ export default class CreateFileButton extends React.Component {
             e.stopPropagation();
         this.setState({upload: !this.state.upload})
     }
+    hide(){
+        this.setState({popup:"none"})
+    }
     render(){
-        console.log(this.state.uploadPopupVisible);
         const style = {
             transform: "rotate(" + (this.state.upload ? "0deg" : "405deg") + ")"
         }
@@ -43,8 +47,7 @@ export default class CreateFileButton extends React.Component {
                 {/* top button, create folder */}
                 <div style = {topButtonStyle} className = "floating-action-button-sm" onClick = {(e) => {
                     this.clickHandler(e);
-                    fetch("/api/createFolder").
-                    then(x => this.props.update());
+                    this.setState({popup: "folder"})
                 }}>
                     <i className = "material-icons">
                         create_new_folder
@@ -53,19 +56,23 @@ export default class CreateFileButton extends React.Component {
                 {/* second top button, upload file */}
                 <div style = {bottomButtonStyle} className = "floating-action-button-sm" onClick = {(e) => {
                     this.clickHandler(e);
-                    this.setState({uploadPopupVisible: true});
+                    this.setState({popup: "upload"});
                 }}>
                     <i className = "material-icons">
                         cloud_upload
                     </i>
-                    {
-                        this.state.uploadPopupVisible ? <UploadPopup update = {this.update}></UploadPopup> : null
-                    }
                 </div>
                 {/* button button, add file */}
                 <div className = "floating-action-button-lg" onClick = {this.clickHandler}>
                     <i style = {style} className = "material-icons">add</i>
                 </div>
+                
+                {
+                    this.state.popup === "upload" ? <UploadPopup hide = {this.hide} update = {this.props.update}></UploadPopup> : null
+                }
+                {
+                    this.state.popup === "folder" ? <FolderPopup hide = {this.hide} update = {this.props.update}></FolderPopup> : null
+                }
             </div>
         )
     }

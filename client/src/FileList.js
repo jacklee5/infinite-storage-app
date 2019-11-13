@@ -14,6 +14,9 @@ export default class FileList extends React.Component {
         }
     }
     componentDidMount(){
+        window.addEventListener("click", () => {
+            this.setState({activeIndex: -1})
+        });
         this.update();
     }
     handleFileClick(event, element){
@@ -21,12 +24,30 @@ export default class FileList extends React.Component {
         this.setState({activeIndex: element.props.index});
     }
     update(){
-        window.addEventListener("click", () => {
-            this.setState({activeIndex: -1})
-        });
+        console.log("yo")
         fetch("/api/files")
         .then(data => data.json())
-        .then(data => this.setState({data: data}));
+        .then(data => {
+            const folders = [];
+            const files = [];
+            for(let i = 0; i < data.length; i++){
+                if(data[i].type === "folder")
+                    folders.push(data[i]);
+                else   
+                    files.push(data[i]);
+            }
+            const sorter = (a, b) => {
+                if(a.name < b.name)
+                    return -1;
+                if(a.name > b.name)
+                    return 1;
+                else   
+                    return 0;
+            }
+            folders.sort(sorter);
+            files.sort(sorter);
+            this.setState({data: [...folders, ...files]})
+        });
     }
     render(){
         return (
