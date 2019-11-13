@@ -23,7 +23,6 @@ export default class FileList extends React.Component {
         this.update();
     }
     handleFileClick(event, element){
-        console.log(this.last_click);
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
         if (Date.now() - this.last_click < 500) {
