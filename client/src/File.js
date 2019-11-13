@@ -35,7 +35,6 @@ export default class File extends React.Component {
                                 <td style = {{width: "40%"}}><img src={this.choosePicture(this.props.data.type)}align = "left" style={{width: "100%", height: "30px", maxWidth: "30px", maxHeight: "30px", marginRight: "8px"}}></img>{this.props.data.name}</td>
                                 <td style = {{width: "30%"}}>{this.props.data.date}</td>
                                 <td style = {{width: "30%"}}>{this.props.data.type}</td>
-
                             </tr>
                         </tbody>
                     </table>

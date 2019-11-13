@@ -11,6 +11,7 @@ class FileList extends React.Component {
         this.handleFileClick = this.handleFileClick.bind(this);
         this.dlfile = this.dlfile.bind(this);
         this.delfile = this.delfile.bind(this);
+        this.keyHandler = this.keyHandler.bind(this);
         this.state = {
             data: undefined,
             activeIndex: -1
@@ -22,7 +23,33 @@ class FileList extends React.Component {
         window.addEventListener("click", () => {
             this.setState({activeIndex: -1})
         });
+        window.addEventListener("keydown", (e) => {
+            this.keyHandler(e.keyCode);
+        })
         this.update();
+    }
+    keyHandler(keyCode){
+        const enter = 13;
+        const up = 38;
+        const down = 40;
+        const del = 46;
+        switch(keyCode) {
+            case enter:
+                window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[this.state.activeIndex].id;
+                break;
+            case up:
+                this.setState({activeIndex: (this.state.activeIndex - 1 + this.state.data.length) % this.state.data.length});
+                break;
+            case down:
+                this.setState({activeIndex: (this.state.activeIndex + 1) % this.state.data.length});
+                break;
+            case del:
+                fetch("/api/delFile/" + this.state.data[this.state.activeIndex].id)
+                .then(x => {
+                    this.update();
+                })
+                break;
+        }
     }
     handleFileClick(event, element){
         event.stopPropagation();
