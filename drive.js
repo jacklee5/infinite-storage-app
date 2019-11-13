@@ -154,7 +154,9 @@ class Drive {
                 //deletes the file
                 drive.files.delete({
                     'fileId': id
-                })
+                }, null, (err, response) => {
+                    res("ok");
+                });
             })
         });
     }
@@ -179,12 +181,11 @@ class Drive {
                 drive.files.create({
                     resource: fileMetadata,
                     fields: 'id'
-                }, (err, response) => {
-                    if (err) {
-                        return rej(err);
-                    } else {
-                        res(response);
-                    }
+                }, null, (err, response) => {
+                    if(err)
+                        rej(err);
+                    else
+                        res("ok");
                 });
             })
         })
@@ -338,6 +339,7 @@ class Drive {
                         //check for userId
                         if (files[i].name === userId + "") {
                             res(files[i].id);
+                            found = true;
                         }
                     }
 
@@ -401,7 +403,7 @@ class Drive {
                                         return {
                                             //return data of each file
                                             id: x.id,
-                                            name: this.undoName(x.name),
+                                            name: this.undoName(x.name).substring(0, x.name.lastIndexOf("&")),
                                             date: moment(x.modifiedTime, "YYYY-MM-DDTHH:mm:ssZ").fromNow(),
                                             type: x.name.substring(x.name.lastIndexOf("&") + 1)
                                         }

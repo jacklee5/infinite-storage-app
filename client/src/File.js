@@ -15,9 +15,9 @@ export default class File extends React.Component {
     choosePicture(check) {
         const images = ["jpg", "jpeg", "tiff", "gif", "bmp", "png", "svg", "pdn", "sai", "psd", "ai"];
         const videos = ["webm", "avi", "mov", "mp4", "m4v", "3gp", "flv", "swf"];
-        if (images.indexOf(check.toLowerCase()) != -1) {
+        if (images.indexOf(check.toLowerCase()) !== -1) {
             return img;
-        } else if (videos.indexOf(check.toLowerCase()) != -1) {
+        } else if (videos.indexOf(check.toLowerCase()) !== -1) {
             return mov;
         } else {
             return oth;
@@ -32,10 +32,9 @@ export default class File extends React.Component {
                     <table style = {style} className = "file" onClick = {(e) => {this.props.handler(e, this)}}>
                         <tbody>
                             <tr>
-                                <td style = {{width: "40%"}}>{this.props.data.name}</td>
+                                <td style = {{width: "40%"}}><img src={this.choosePicture(this.props.data.type)}align = "left" style={{width: "100%", height: "30px", maxWidth: "30px", maxHeight: "30px", marginRight: "8px"}}></img>{this.props.data.name}</td>
                                 <td style = {{width: "30%"}}>{this.props.data.date}</td>
-                                <td style = {{width: "7%"}}>{this.props.data.type}</td>
-                                <td style = {{width: "23%"}}><img src={this.choosePicture(this.props.data.type)} align= "right" style={{width: "100%", height: "100%", maxWidth: "30px", maxHeight: "30px"}}></img></td>
+                                <td style = {{width: "30%"}}>{this.props.data.type}</td>
                             </tr>
                         </tbody>
                     </table>
@@ -43,7 +42,6 @@ export default class File extends React.Component {
                 <div className = "rightClickMenu">
                     <ContextMenu id = {this.props.data.id + "id"}>
                         <MenuItem onClick={(e) => {this.props.dlfile(e, this)}}>Download</MenuItem>
-                        <MenuItem divider />
                         <MenuItem onClick={(e) => {this.props.delfile(e, this)}}>Delete</MenuItem>
                     </ContextMenu>
                 </div>

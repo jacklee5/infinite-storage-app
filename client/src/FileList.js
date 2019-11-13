@@ -17,10 +17,12 @@ export default class FileList extends React.Component {
         this.last_click = 0;
     }
     componentDidMount(){
+        window.addEventListener("click", () => {
+            this.setState({activeIndex: -1})
+        });
         this.update();
     }
     handleFileClick(event, element){
-        console.log(this.last_click);
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
         if (Date.now() - this.last_click < 500) {
@@ -43,12 +45,30 @@ export default class FileList extends React.Component {
         })
     }
     update(){
-        window.addEventListener("click", () => {
-            this.setState({activeIndex: -1})
-        });
+        console.log("yo")
         fetch("/api/files")
         .then(data => data.json())
-        .then(data => this.setState({data: data}));
+        .then(data => {
+            const folders = [];
+            const files = [];
+            for(let i = 0; i < data.length; i++){
+                if(data[i].type === "folder")
+                    folders.push(data[i]);
+                else   
+                    files.push(data[i]);
+            }
+            const sorter = (a, b) => {
+                if(a.name < b.name)
+                    return -1;
+                if(a.name > b.name)
+                    return 1;
+                else   
+                    return 0;
+            }
+            folders.sort(sorter);
+            files.sort(sorter);
+            this.setState({data: [...folders, ...files]})
+        });
     }
     render(){
         return (

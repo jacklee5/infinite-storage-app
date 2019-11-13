@@ -204,11 +204,11 @@ app.get("/api/files", (req, res) => {
         res.send(data);
     });
 });
-app.get("/api/createFolder", (req, res) => {
+app.post("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
-        //drive.createFolder("hubnub", id)
-        //.then(res.send("ok"));
+        drive.createFolder(req.body.title + "&folder", id)
+        .then(res.send("ok"));
     })
 });
 
