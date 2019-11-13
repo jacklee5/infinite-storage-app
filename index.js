@@ -156,7 +156,6 @@ app.get("/", isUserAuthenticated, (req, res) => {
 
 // Logout route
 app.get("/logout", (req, res) => {
-    console.log("hi")
     req.logout(); 
     res.redirect('/');
 });
@@ -211,44 +210,32 @@ app.post("/api/createFolder", (req, res) => {
         drive.createFolder(req.body.title + "&folder", id)
         .then(res.send("ok"));
     })
+});
+
+app.get("/api/getFile/:id", (req, res) => {
+    drive.assembleFile(req.params.id)
+    .then(x => {
+        fs.readdir("files/" + req.params.id, (err, files) => {
+            const name = files[0];
+            res.download(__dirname + "/files/" + req.params.id + "/" + name);
+        })
+    })
+});
+
+app.get("/api/delFile/:id", (req, res) => {
+    drive.fileDelete(req.params.id)
+    .then(x=> {
+        res.send("deleted");
+    });
 })
 
 let done = 0;
 
+//writeFoldery
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
-    console.log("started uploading");
-    drive.fileWrite("test", "tets", "10RbK_NNiS6vchjKnSAJocG7baDx6zIj3")
-    drive.getUserFolder(req.user.user_id)
-    .then(id => {
-        res.send("ok");
-        //read the file and encode it in base 64
-        fs.readFile(req.file.path, "base64", (err, data) => {
-            //create the name of the folder
-            title = drive.prepName(req.file.originalname);
-            drive.createFolder(title, id).then(file =>
-                {
-                    //split data and create files in the folder with the data
-                    split_data = drive.splitData(data + "");
-                    const WAIT_TIME = 500;
-                    done = 0;
-                    let cur = 0;
-                    const int = setInterval(() => {
-                        if(cur === split_data.length)
-                            return clearInterval(int);
-                        drive.fileWrite(cur + "", split_data[cur] + "", file.data.id)
-                        .then(x => {
-                            done++;
-                            console.log("uploading: " + (done*100/split_data.length) + "%");
-                        })
-                        .catch(x => {
-                            console.log("Retrying file " + (done + 1) + "/" + split_data.length);
-                            retry(x);
-                        })
-                        cur++;
-                    }, WAIT_TIME);
-                }
-            );
-        })
+    drive.writeFolder(req)
+    .then (x => {
+        res("uploaded");
     })
 })
 
@@ -267,7 +254,6 @@ function retry (x) {
 }
 
 app.get("/api/logout", (req, res) => {
-    console.log("hubnub")
     req.logout();
     res.redirect("/");
 })

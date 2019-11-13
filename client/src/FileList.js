@@ -8,10 +8,13 @@ export default class FileList extends React.Component {
         super();
         this.update = this.update.bind(this);
         this.handleFileClick = this.handleFileClick.bind(this);
+        this.dlfile = this.dlfile.bind(this);
+        this.delfile = this.delfile.bind(this);
         this.state = {
             data: undefined,
             activeIndex: -1
         }
+        this.last_click = 0;
     }
     componentDidMount(){
         window.addEventListener("click", () => {
@@ -20,8 +23,27 @@ export default class FileList extends React.Component {
         this.update();
     }
     handleFileClick(event, element){
+        console.log(this.last_click);
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
+        if (Date.now() - this.last_click < 500) {
+            ///api/getFile/3
+            window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
+        }
+        this.last_click = Date.now();
+    }
+    dlfile(event, element) {
+        event.stopPropagation();
+        this.setState({activeIndex: element.props.index});
+        window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
+    }
+    delfile(event, element) {
+        event.stopPropagation();
+        this.setState({activeIndex: element.props.index});
+        fetch("/api/delFile/" + this.state.data[element.props.index].id)
+        .then(x => {
+            this.update();
+        })
     }
     update(){
         console.log("yo")
@@ -71,6 +93,8 @@ export default class FileList extends React.Component {
                         key = {x.id}
                         index = {i}
                         active = {i === this.state.activeIndex}
+                        dlfile = {this.dlfile}
+                        delfile = {this.delfile}
                     ></File>)
                 }) 
                 : "loading files"}
