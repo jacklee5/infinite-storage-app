@@ -2,10 +2,11 @@ import React from 'react';
 import './css/FileList.css';
 import File from './File';
 import CreateFileButton from './CreateFileButton';
+import {withRouter} from 'react-router-dom'
 
-export default class FileList extends React.Component {
-    constructor(){
-        super();
+class FileList extends React.Component {
+    constructor(props){
+        super(props);
         this.update = this.update.bind(this);
         this.handleFileClick = this.handleFileClick.bind(this);
         this.dlfile = this.dlfile.bind(this);
@@ -15,6 +16,7 @@ export default class FileList extends React.Component {
             activeIndex: -1
         }
         this.last_click = 0;
+        this.folderId = this.props.location.pathname.split("/")[2] || "";
     }
     componentDidMount(){
         window.addEventListener("click", () => {
@@ -25,10 +27,17 @@ export default class FileList extends React.Component {
     handleFileClick(event, element){
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
+        const type = element.props.data.type;
+        const id = this.state.data[element.props.index].id
         if (Date.now() - this.last_click < 500) {
-            ///api/getFile/3
-            window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
-        }
+            if(type === "folder"){
+                this.props.history.push("/folder/" + id);
+                this.setState({folderId: this.id});
+                this.update();
+            } else{
+                window.location.href = "http://localhost:1337/api/getFile/" + id;
+            }
+        }        
         this.last_click = Date.now();
     }
     dlfile(event, element) {
@@ -46,7 +55,7 @@ export default class FileList extends React.Component {
     }
     update(){
         console.log("yo")
-        fetch("/api/files")
+        fetch("/api/files/" + this.folderId)
         .then(data => data.json())
         .then(data => {
             const folders = [];
@@ -103,3 +112,5 @@ export default class FileList extends React.Component {
         )
     }
 }
+
+export default withRouter(FileList);

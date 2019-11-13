@@ -382,7 +382,7 @@ class Drive {
         return org.replace("&", ".");
     }
 
-    getUserFiles(userId) {
+    getUserFiles(userId, folderId) {
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
@@ -397,7 +397,7 @@ class Drive {
                         //check for userId
                         if (files[i].name === userId + "") {
                             found = true;
-                            authorize(this.credentials, this.getFiles, files[i].id)
+                            authorize(this.credentials, this.getFiles, folderId || files[i].id)
                                 .then(data => {
                                     res(data.map(x => {
                                         return {

@@ -26,6 +26,7 @@ class App extends React.Component {
         <BrowserRouter>
           <Switch>
             <Route exact path="/" component = {MainPage}></Route>
+            <Route path = "/folder" component = {MainPage}></Route>
           </Switch>
         </BrowserRouter>
       </div>
