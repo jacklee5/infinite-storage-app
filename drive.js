@@ -91,6 +91,7 @@ class Drive {
                     version: 'v3',
                     auth
                 });
+                
                 //gets file content
                 drive.files.export({
                     'fileId': id,
@@ -154,9 +155,7 @@ class Drive {
                 //deletes the file
                 drive.files.delete({
                     'fileId': id
-                }, null, (err, response) => {
-                    res("ok");
-                });
+                })
             })
         });
     }
@@ -181,11 +180,12 @@ class Drive {
                 drive.files.create({
                     resource: fileMetadata,
                     fields: 'id'
-                }, null, (err, response) => {
-                    if(err)
-                        rej(err);
-                    else
-                        res("ok");
+                }, (err, response) => {
+                    if (err) {
+                        return rej(err);
+                    } else {
+                        res(response);
+                    }
                 });
             })
         })
@@ -273,23 +273,29 @@ class Drive {
                         return Number(a.name) - Number(b.name);
                     })
                     //reads all of the files
+                    var requestQueue = [] //queue for requests, store this.fileread requests
                     Promise.all(files.map((x, i) => {
                         console.log(x.name);
-                        return new Promise((res, rej) => {
-                            setTimeout(() => {
-                                this.fileRead(x.id)
-                                .then(d => {
-                                    res(d);
-                                });
-                            }, i * 500);
-                        });
+                        requestQueue.push([this.fileRead, x, i])
                     }))
-                    .then(values => {
-                        for(let i = 0; i < files.length; i++){
-                            full += values[i].substring(1);
-                        }
-                        res(full);
-                    })
+                     // return new Promise((res, rej) => {
+                        //     setTimeout(() => {
+                        //         this.fileRead(x.id)
+                        //         .then(d => {
+                        //             res(d);
+                        //         });
+                        //     }, i * 500);
+                        // });
+
+                    // .then(values => {
+                    //     for(let i = 0; i < files.length; i++){
+                    //         full += values[i].substring(1);
+                    //     }
+                    //     res(full);
+                    // })
+                    // while(requestQueue.length > 0){
+                        
+                    // }
                 });
         });
     }
@@ -339,7 +345,6 @@ class Drive {
                         //check for userId
                         if (files[i].name === userId + "") {
                             res(files[i].id);
-                            found = true;
                         }
                     }
 
@@ -382,7 +387,7 @@ class Drive {
         return org.replace("&", ".");
     }
 
-    getUserFiles(userId, folderId) {
+    getUserFiles(userId) {
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
@@ -397,7 +402,7 @@ class Drive {
                         //check for userId
                         if (files[i].name === userId + "") {
                             found = true;
-                            authorize(this.credentials, this.getFiles, folderId || files[i].id)
+                            authorize(this.credentials, this.getFiles, files[i].id)
                                 .then(data => {
                                     res(data.map(x => {
                                         return {

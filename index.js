@@ -197,14 +197,15 @@ app.get("/api/account-img", (req, res) => {
 app.get("/api/isAuthenticated", (req, res) => {
     res.send(`${!!req.user}`);
 })
-app.get("/api/files/:id", (req, res) => {
-    console.log("id:" + req.params.id);
-    drive.getUserFiles(req.user.user_id, req.params.id)
+app.get("/api/files", (req, res) => {
+    drive.getUserFiles(req.user.user_id)
     .then(data => {
         console.log("/api/files")
         res.send(data);
     });
 });
+
+//Creates Folder
 app.post("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
@@ -213,6 +214,7 @@ app.post("/api/createFolder", (req, res) => {
     })
 });
 
+//Gets File
 app.get("/api/getFile/:id", (req, res) => {
     drive.assembleFile(req.params.id)
     .then(x => {
@@ -223,6 +225,7 @@ app.get("/api/getFile/:id", (req, res) => {
     })
 });
 
+//Deletes File
 app.get("/api/delFile/:id", (req, res) => {
     drive.fileDelete(req.params.id)
     .then(x=> {
