@@ -12,12 +12,18 @@ class FileList extends React.Component {
         this.dlfile = this.dlfile.bind(this);
         this.delfile = this.delfile.bind(this);
         this.keyHandler = this.keyHandler.bind(this);
+        this.deselect = this.deselect.bind(this);
         this.state = {
             data: undefined,
             activeIndex: -1
         }
         this.last_click = 0;
         this.folderId = this.props.location.pathname.split("/")[2] || "";
+        this.props.history.listen((location, action) => {
+            this.folderId = location.pathname.split("/")[2] || "";
+            this.setState({data: undefined})
+            this.update();
+        })
     }
     componentDidMount(){
         window.addEventListener("click", () => {
@@ -27,15 +33,19 @@ class FileList extends React.Component {
             this.keyHandler(e.keyCode);
         })
         this.update();
+        this.props.history.listen((location, action) => {
+            this.update();
+        });
     }
     keyHandler(keyCode){
+        if(this.state.activeIndex === -1) return;
         const enter = 13;
         const up = 38;
         const down = 40;
         const del = 46;
         switch(keyCode) {
             case enter:
-                window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[this.state.activeIndex].id;
+                this.onFileSelect(this.state.data[this.state.activeIndex]);
                 break;
             case up:
                 this.setState({activeIndex: (this.state.activeIndex - 1 + this.state.data.length) % this.state.data.length});
@@ -44,11 +54,22 @@ class FileList extends React.Component {
                 this.setState({activeIndex: (this.state.activeIndex + 1) % this.state.data.length});
                 break;
             case del:
+                if(!this.state.data[this.state.activeIndex]) break;
+                this.setState({data: this.state.data.filter(x => {
+                    return x.id !== this.state.data[this.state.activeIndex].id
+                })});
                 fetch("/api/delFile/" + this.state.data[this.state.activeIndex].id)
                 .then(x => {
                     this.update();
                 })
                 break;
+        }
+    }
+    onFileSelect(file){
+        if(file.type === "folder"){
+            this.props.history.push("/folder/" + file.id);
+        } else{
+            window.location.href = "http://localhost:1337/api/getFile/" + file.id;
         }
     }
     handleFileClick(event, element){
@@ -57,13 +78,7 @@ class FileList extends React.Component {
         const type = element.props.data.type;
         const id = this.state.data[element.props.index].id
         if (Date.now() - this.last_click < 500) {
-            if(type === "folder"){
-                this.props.history.push("/folder/" + id);
-                this.setState({folderId: this.id});
-                this.update();
-            } else{
-                window.location.href = "http://localhost:1337/api/getFile/" + id;
-            }
+            this.onFileSelect(this.state.data[element.props.index]);
         }        
         this.last_click = Date.now();
     }
@@ -74,14 +89,15 @@ class FileList extends React.Component {
     }
     delfile(event, element) {
         event.stopPropagation();
-        this.setState({activeIndex: element.props.index});
+        this.setState({data: this.state.data.filter(x => {
+            return x.id !== this.state.data[this.state.activeIndex].id
+        })})
         fetch("/api/delFile/" + this.state.data[element.props.index].id)
         .then(x => {
             this.update();
         })
     }
     update(){
-        console.log("yo")
         fetch("/api/files/" + this.folderId)
         .then(data => data.json())
         .then(data => {
@@ -106,6 +122,9 @@ class FileList extends React.Component {
             this.setState({data: [...folders, ...files]})
         });
     }
+    deselect(){
+        this.setState({activeIndex: -1});
+    }
     render(){
         return (
         <div>
@@ -120,7 +139,8 @@ class FileList extends React.Component {
                     </tbody>
                 </table>
                 <hr></hr>
-                {this.state.data ? 
+                {this.state.data ?
+                this.state.data.length !== 0 ?  
                 this.state.data.map((x, i) => {
                     return (<File
                         data = {x}
@@ -132,9 +152,11 @@ class FileList extends React.Component {
                         delfile = {this.delfile}
                     ></File>)
                 }) 
-                : "loading files"}
+                : "this folder is empty"
+                : "loading files..."
+                }
             </div>
-            <CreateFileButton update = {this.update}></CreateFileButton>
+            <CreateFileButton update = {this.update} deselect = {this.deselect}></CreateFileButton>
         </div>
         )
     }

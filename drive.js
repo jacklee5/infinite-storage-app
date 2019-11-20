@@ -185,7 +185,7 @@ class Drive {
                     if(err)
                         rej(err);
                     else
-                        res("ok");
+                        res(response);
                 });
             })
         })
