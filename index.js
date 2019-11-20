@@ -196,6 +196,13 @@ app.get("/api/account-img", (req, res) => {
 })
 app.get("/api/isAuthenticated", (req, res) => {
     res.send(`${!!req.user}`);
+});
+app.get("/api/files", (req, res) => {
+    drive.getUserFiles(req.user.user_id)
+    .then(data => {
+        console.log("/api/files")
+        res.send(data);
+    });
 })
 app.get("/api/files", (req, res) => {
     drive.getUserFiles(req.user.user_id)

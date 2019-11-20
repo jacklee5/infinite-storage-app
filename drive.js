@@ -176,12 +176,11 @@ class Drive {
                 drive.files.create({
                     resource: fileMetadata,
                     fields: 'id'
-                }, (err, response) => {
-                    if (err) {
-                        return rej(err);
-                    } else {
+                }, null, (err, response) => {
+                    if(err)
+                        rej(err);
+                    else
                         res(response);
-                    }
                 });
             })
         })

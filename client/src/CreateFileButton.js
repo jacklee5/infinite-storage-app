@@ -23,7 +23,8 @@ export default class CreateFileButton extends React.Component {
     clickHandler(e){
         if(e)
             e.stopPropagation();
-        this.setState({upload: !this.state.upload})
+        this.setState({upload: !this.state.upload});
+        this.props.deselect();
     }
     hide(){
         this.setState({popup:"none"})
