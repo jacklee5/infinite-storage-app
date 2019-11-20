@@ -262,6 +262,7 @@ class Drive {
         return new Promise((res, rej) => {
             authorize(this.credentials, this.getFiles, folderId)
                 .then(files => {
+                    console.log("memes")
                     var full = "";
                     //sort files in folder by name
                     files.sort((a, b) => {
