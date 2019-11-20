@@ -55,13 +55,13 @@ class FileList extends React.Component {
                 break;
             case del:
                 if(!this.state.data[this.state.activeIndex]) break;
-                this.setState({data: this.state.data.filter(x => {
-                    return x.id !== this.state.data[this.state.activeIndex].id
-                })});
                 fetch("/api/delFile/" + this.state.data[this.state.activeIndex].id)
                 .then(x => {
                     this.update();
-                })
+                });
+                this.setState({data: this.state.data.filter(x => {
+                    return x.id !== this.state.data[this.state.activeIndex].id
+                })});
                 break;
         }
     }
@@ -89,6 +89,7 @@ class FileList extends React.Component {
     }
     delfile(event, element) {
         event.stopPropagation();
+        this.setState({activeIndex: element.props.index});
         this.setState({data: this.state.data.filter(x => {
             return x.id !== this.state.data[this.state.activeIndex].id
         })})

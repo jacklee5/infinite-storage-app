@@ -299,7 +299,7 @@ class Drive {
         });
     }
 
-    writeFolder(req) {
+    writeFolder(req, folderId) {
         return new Promise ((res, rej) => {
             console.log("started uploading");
             this.getUserFolder(req.user.user_id)
@@ -307,7 +307,7 @@ class Drive {
                 var stack = [];
                 fs.readFile(req.file.path, "base64", (err, data) => {
                     var title = this.prepName(req.file.originalname);
-                    this.createFolder(title, id).then(file => {
+                    this.createFolder(title, folderId || id).then(file => {
                         var split_data = this.splitData(data + "");
                         const WAIT_TIME = 500;
                         var done = 0;
@@ -343,6 +343,7 @@ class Drive {
                     for (let i = 0; i < files.length; i++) {
                         //check for userId
                         if (files[i].name === userId + "") {
+                            found = true;
                             res(files[i].id);
                         }
                     }
@@ -386,7 +387,7 @@ class Drive {
         return org.replace("&", ".");
     }
 
-    getUserFiles(userId) {
+    getUserFiles(userId, folderId) {
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
@@ -401,7 +402,7 @@ class Drive {
                         //check for userId
                         if (files[i].name === userId + "") {
                             found = true;
-                            authorize(this.credentials, this.getFiles, files[i].id)
+                            authorize(this.credentials, this.getFiles, folderId || files[i].id)
                                 .then(data => {
                                     res(data.map(x => {
                                         return {

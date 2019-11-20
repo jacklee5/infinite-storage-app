@@ -204,8 +204,8 @@ app.get("/api/files", (req, res) => {
         res.send(data);
     });
 })
-app.get("/api/files", (req, res) => {
-    drive.getUserFiles(req.user.user_id)
+app.get("/api/files/:id", (req, res) => {
+    drive.getUserFiles(req.user.user_id, req.params.id)
     .then(data => {
         console.log("/api/files")
         res.send(data);
@@ -220,6 +220,10 @@ app.post("/api/createFolder", (req, res) => {
         .then(res.send("ok"));
     })
 });
+app.post("/api/createFolder/:id", (req, res) => {
+    drive.createFolder(req.body.title + "&folder", req.params.id)
+    .then(res.send("ok"));
+})
 
 //Gets File
 app.get("/api/getFile/:id", (req, res) => {
@@ -246,6 +250,12 @@ let done = 0;
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.writeFolder(req)
     .then (x => {
+        res("uploaded");
+    })
+})
+app.post("/api/uploadFile/:id", upload.single("file"), (req, res) => {
+    drive.writeFolder(req, req.params.id)
+    .then(x => {
         res("uploaded");
     })
 })
