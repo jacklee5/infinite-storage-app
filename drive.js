@@ -99,11 +99,7 @@ class Drive {
                 }, (err, response) => {
                     if(err) {
                         console.log(err);
-                        setTimeout( () => {
-                            console.log(y);
-                            console.log("retrying");
-                            res(this.fileRead(id));
-                        }, 2000);
+                        throw "failed to read file"
                     };
                     res(response.data);
                 })
@@ -274,28 +270,28 @@ class Drive {
                     })
                     //reads all of the files
                     var requestQueue = [] //queue for requests, store this.fileread requests
-                    Promise.all(files.map((x, i) => {
-                        console.log(x.name);
-                        requestQueue.push([this.fileRead, x, i])
-                    }))
-                     // return new Promise((res, rej) => {
-                        //     setTimeout(() => {
-                        //         this.fileRead(x.id)
-                        //         .then(d => {
-                        //             res(d);
-                        //         });
-                        //     }, i * 500);
-                        // });
+                    for(var i = 0; i < files.length; i++){
+                        console.log(files[i].name);
+                        requestQueue.push([files[i], i]);
+                    }
+                    var fileArray = [];
+                    while(true){
+                        var n = requestQueue.shift();
+                        try{
+                            j = fileRead(n[0].id)
+                            fileArray[n[1]] = j
 
-                    // .then(values => {
-                    //     for(let i = 0; i < files.length; i++){
-                    //         full += values[i].substring(1);
-                    //     }
-                    //     res(full);
-                    // })
-                    // while(requestQueue.length > 0){
-                        
-                    // }
+                        }catch(err){
+                            requestQueue.push(n)
+                        }
+                        if(requestQueue.length === 0)
+                            break;
+                    }
+                    var comp = "";
+                    for (let i = 0; i < fileArray.length; i++) {
+                        comp += fileArray[i];
+                    }
+                    res(comp);
                 });
         });
     }
