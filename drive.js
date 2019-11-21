@@ -275,11 +275,23 @@ class Drive {
                         requestQueue.push([files[i], i]);
                     }
                     var fileArray = [];
+                    let done = 0;
+                    let total = files.length;
                     while(true){
                         var n = requestQueue.shift();
                         try{
-                            j = fileRead(n[0].id)
-                            fileArray[n[1]] = j
+                            this.fileRead(n[0].id).then(x => {
+                                fileArray[n[1]] = x;
+                                done++;
+                                console.log(done + " out of " + total);
+                                if(total === done){
+                                    var comp = "";
+                                    for (let i = 0; i < fileArray.length; i++) {
+                                        comp += fileArray[i];
+                                    }
+                                    res(comp);
+                                }
+                            });
 
                         }catch(err){
                             requestQueue.push(n)
@@ -287,11 +299,6 @@ class Drive {
                         if(requestQueue.length === 0)
                             break;
                     }
-                    var comp = "";
-                    for (let i = 0; i < fileArray.length; i++) {
-                        comp += fileArray[i];
-                    }
-                    res(comp);
                 });
         });
     }
