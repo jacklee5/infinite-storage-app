@@ -20,7 +20,8 @@ class FolderPopup extends React.Component {
         for (const pair of new FormData(document.getElementById("folder-form"))) {
             data.append(pair[0], pair[1]);
         }
-        fetch("/api/createFolder/" + this.props.location.pathname.split("/")[2] || "", {
+        const id = this.props.location.pathname.split("/")[2];
+        fetch("/api/createFolder" + (id ? "/" + id : ""), {
             method: 'post',
             body: data,
         })

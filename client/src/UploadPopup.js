@@ -20,7 +20,8 @@ class UploadPopup extends React.Component {
             const file = el.files[i];
             const formData = new FormData();
             formData.append("file", file);
-            fetch('/api/uploadFile/' + this.props.location.pathname.split("/")[2] || "", {method: "POST", body: formData})
+            const id = this.props.location.pathname.split("/")[2];
+            fetch('/api/uploadFile' + (id ? "/" + id : ""), {method: "POST", body: formData})
             .then(x => this.props.update())
         }
         this.props.hide();

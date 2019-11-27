@@ -208,13 +208,13 @@ class Drive {
             return this.addToQueue(this.createFolder, [title, parent]);
         }
         return new Promise((res, rej) => {
+            console.log("create folder in " + parent);
             authorize(this.credentials, (auth) => {
                 //create drive object with authentification
                 const drive = google.drive({
                     version: 'v3',
                     auth
                 });
-
                 //create metadata of folder
                 var fileMetadata = {
                     name: title,
@@ -228,7 +228,7 @@ class Drive {
                     fields: 'id'
                 }, null, (err, response) => {
                     if(err)
-                        rej(err);
+                        console.log(err);
                     else
                         res(response);
                 });
@@ -328,8 +328,8 @@ class Drive {
                         return this.fileRead(x.id);
                     }))
                     .then(values => {
-                        for(let i = 0; i < files.length; i++){
-                            console.log((i*100/files.length) + "% done downloading");
+                        for(let i = 0; i < values.length; i++){
+                            console.log(`${i} of ${values.length} done`);
                             full += values[i].substring(1);
                         }
                         res(full);
@@ -346,11 +346,9 @@ class Drive {
             console.log("started uploading");
             this.getUserFolder(req.user.user_id)
             .then(id => {
-                var stack = [];
                 fs.readFile(req.file.path, "base64", (err, data) => {
                     var title = this.prepName(req.file.originalname);
-                    const actualId = folderId === undefined ? folderId : id;
-                    console.log(actualId);
+                    const actualId = (folderId || id);
                     this.createFolder(title, actualId).then(file => {
                         var split_data = this.splitData(data + "");
                         var done = 0;
