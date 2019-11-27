@@ -219,7 +219,7 @@ app.post("/api/createFolder", (req, res) => {
         drive.createFolder(req.body.title + "&folder", id)
         .then(res.send("ok"));
     })
-});
+}); 
 
 //Gets File
 app.get("/api/getFile/:id", (req, res) => {
