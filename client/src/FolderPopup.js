@@ -1,7 +1,8 @@
 import React from 'react';
 import Button from './Button';
+import {withRouter} from 'react-router-dom';
 
-export default class UploadPopup extends React.Component {
+class FolderPopup extends React.Component {
     constructor(){
         super();
         this.state = {
@@ -19,7 +20,7 @@ export default class UploadPopup extends React.Component {
         for (const pair of new FormData(document.getElementById("folder-form"))) {
             data.append(pair[0], pair[1]);
         }
-        fetch("/api/createFolder", {
+        fetch("/api/createFolder/" + this.props.location.pathname.split("/")[2] || "", {
             method: 'post',
             body: data,
         })
@@ -45,3 +46,5 @@ export default class UploadPopup extends React.Component {
         )
     }
 }
+
+export default withRouter(FolderPopup)

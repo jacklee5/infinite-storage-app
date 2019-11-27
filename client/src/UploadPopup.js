@@ -1,7 +1,8 @@
 import React from 'react';
 import Button from './Button';
+import {withRouter} from 'react-router-dom'
 
-export default class UploadPopup extends React.Component {
+class UploadPopup extends React.Component {
     constructor(){
         super();
         this.state = {
@@ -19,7 +20,7 @@ export default class UploadPopup extends React.Component {
             const file = el.files[i];
             const formData = new FormData();
             formData.append("file", file);
-            fetch('/api/uploadFile', {method: "POST", body: formData})
+            fetch('/api/uploadFile/' + this.props.location.pathname.split("/")[2] || "", {method: "POST", body: formData})
             .then(x => this.props.update())
         }
         this.props.hide();
@@ -42,3 +43,5 @@ export default class UploadPopup extends React.Component {
         )
     }
 }
+
+export default withRouter(UploadPopup);
