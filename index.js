@@ -216,6 +216,7 @@ app.get("/api/files/:id", (req, res) => {
 app.post("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
+        console.log("folder id: " + id);
         drive.createFolder(req.body.title + "&folder", id)
         .then(res.send("ok"));
     })
