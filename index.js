@@ -260,20 +260,6 @@ app.post("/api/uploadFile/:id", upload.single("file"), (req, res) => {
     })
 })
 
-function retry (x) {
-    drive.fileWrite(x.title, x.data, x.folder)
-    .then(y => {
-        done++;
-        console.log("uploading: " + (done*100/split_data.length) + "%");
-    })
-    .catch(y => {
-        setTimeout(function () {
-            console.log("Retrying file " + (done + 1) + "/" + split_data.length);
-            retry(y);
-        }, 2000);
-    })
-}
-
 app.get("/api/logout", (req, res) => {
     req.logout();
     res.redirect("/");
