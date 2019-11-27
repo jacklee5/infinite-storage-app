@@ -1,6 +1,5 @@
 import React from 'react';
 import './css/Header.css';
-import accountImg from './img/new-year.png';
 import logo from './piccypics/BerdBoxLogo.png'
 import AccountDetailsButton from './AccountDetailsButton';
 import AccountImage from './AccountImage';
@@ -28,10 +27,12 @@ export default class Header extends React.Component {
     render(){
         return (
             <header className = "header">
-                <div className = "logo-container">
-                    <img src = {logo} className = "logo"></img>
-                    <h1 className = "title">berdbox</h1>
-                </div>
+                <a href = "/" style = {{color: "black"}}>
+                    <div className = "logo-container">
+                        <img src = {logo} className = "logo"></img>
+                        <h1 className = "title">berdbox</h1>
+                    </div>
+                </a>
                 <AccountImage toggleAccountDetails = {this.toggleAccountDetails}></AccountImage>
                 <AccountDetails  visible = {this.state.accountDetailsVisible}>
                     <AccountDetailsButton icon = "exit_to_app" text = "Sign out" handler = {() => {
