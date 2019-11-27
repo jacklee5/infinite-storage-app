@@ -3,7 +3,9 @@ import './css/File.css';
 import { ContextMenu, MenuItem, ContextMenuTrigger } from "react-contextmenu";
 import img from './piccypics/Picture.png'
 import mov from './piccypics/Movie.gif'
-import oth from './piccypics/Folder.png'
+import fol from './piccypics/Folder.png'
+import txt from './piccypics/txt.png'
+import sou from './piccypics/sound.png'
 
 export default class File extends React.Component {
 
@@ -15,12 +17,21 @@ export default class File extends React.Component {
     choosePicture(check) {
         const images = ["jpg", "jpeg", "tiff", "gif", "bmp", "png", "svg", "pdn", "sai", "psd", "ai"];
         const videos = ["webm", "avi", "mov", "mp4", "m4v", "3gp", "flv", "swf"];
+        const text = ["doc", "docx", "rtf", "txt", "pdf"];
+        const sound = ["wav", "ogg", "mp3", "flac", "m4a"]
+        const folder = "folder"
         if (images.indexOf(check.toLowerCase()) !== -1) {
             return img;
         } else if (videos.indexOf(check.toLowerCase()) !== -1) {
             return mov;
+        } else if (check.toLowerCase() === folder) {
+            return fol;
+        } else if (text.indexOf(check.toLowerCase()) !== -1) {
+            return txt;
+        } else if (sound.indexOf(check.toLowerCase()) !== -1) {
+            return sou
         } else {
-            return oth;
+            return fol;
         }
     }
 
