@@ -238,7 +238,7 @@ class Drive {
 
     //splits a string into sets of 100000 characters
     splitData(data) {
-        const part_length = 100000;
+        const part_length = 1535000;
         var folder_size = Math.ceil(data.length / part_length);
         var split_data = [];
         for (let i = 0; i < folder_size - 1; i++) {
@@ -360,6 +360,9 @@ class Drive {
                             .then(x => {
                                 done++;
                                 console.log("uploading: " + (done*100/split_data.length) + "%");
+                                if(done === split_data.length){
+                                    res("ok");
+                                }
                             })
                         }
                     })

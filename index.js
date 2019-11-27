@@ -250,13 +250,13 @@ let done = 0;
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.writeFolder(req)
     .then (x => {
-        res("uploaded");
+        res.send("uploaded");
     })
 })
 app.post("/api/uploadFile/:id", upload.single("file"), (req, res) => {
     drive.writeFolder(req, req.params.id)
     .then(x => {
-        res("uploaded");
+        res.send("uploaded");
     })
 })
 
