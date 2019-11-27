@@ -71,18 +71,59 @@ function getNewToken(oAuth2Client, callback) {
 
 class Drive {
     constructor() {
-        this.credentials;
         const content = fs.readFileSync('credentials.json');
         const credentials = JSON.parse(content);
         this.credentials = credentials;
-    }
-    /**
-     * Prints the title of a sample doc:
-     * https://docs.google.com/document/d/195j9eDD3ccgjQRttHhJPymLJUCOUjs-jmwTrekvdjFE/edit
-     * @param {google.auth.OAuth2} auth The authenticated Google OAuth 2.0 client.
-     */
 
-    fileRead(id) {
+        //file read
+        //file write
+        //file delete
+        //create folder
+        //getFiles
+        //readFolder
+        //writeFolder
+        //getUserFolder
+        //getUserFiles
+        //each queue entry be like
+        /**
+         * {
+         *  f: ()=>{}
+         *  args: []
+         * }
+        */
+
+        this.queue = [];
+        setInterval(() => {
+            if(this.queue.length == 0) return;
+            const entry = this.queue.shift();
+            entry.f.bind(this)(...entry.args, true)
+            .then(x => {
+                return entry.res(x)
+            })
+            .catch(err => {
+                console.log("retrying function " + entry.f.name);
+                this.addToQueue(entry.f, entry.args);
+            });
+        }, 500);
+
+        this.getFiles = this.getFiles.bind(this);
+    }
+
+    addToQueue(f, args){
+        return new Promise((res, rej) => {
+            this.queue.push({
+                f: f,
+                args: args,
+                res: res
+            })
+        })
+        
+    }
+
+    fileRead(id, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.fileRead, [id]);
+        }
         return new Promise((res, rej) => {
             //authorizes the reading of a file in hihi drive
             authorize(this.credentials, (auth) => {
@@ -107,7 +148,10 @@ class Drive {
         });
     }
 
-    fileWrite(title, data, folder) {
+    fileWrite(title, data, folder, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.fileWrite, [title, data, folder]);
+        }
         return new Promise((res, rej) => {
             //authorizes the writing of a file in hihi drive
             authorize(this.credentials, (auth) => {
@@ -140,7 +184,10 @@ class Drive {
         })
     }
 
-    fileDelete(id) {
+    fileDelete(id, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.fileDelete, [id]);
+        }
         return new Promise((res, rej) => {
             authorize(this.credentials, (auth) => {
                 //create drive object with authentification
@@ -156,7 +203,10 @@ class Drive {
         });
     }
 
-    createFolder(title, parent) {
+    createFolder(title, parent, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.createFolder, [title, parent]);
+        }
         return new Promise((res, rej) => {
             authorize(this.credentials, (auth) => {
                 //create drive object with authentification
@@ -230,7 +280,10 @@ class Drive {
     }
 
     //returns all files in folder of folderId
-    getFiles(auth, folderId) {
+    getFiles(auth, folderId, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.getFiles, [auth, folderId]);
+        }
         return new Promise((res, rej) => {
             //create drive object with authentification
             const drive = google.drive({
@@ -258,7 +311,10 @@ class Drive {
         })
     }
 
-    readFolder(auth, folderId) {
+    readFolder(auth, folderId, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.readFolder, [auth, folderId]);
+        }
         return new Promise((res, rej) => {
             authorize(this.credentials, this.getFiles, folderId)
                 .then(files => {
@@ -268,42 +324,24 @@ class Drive {
                     files.sort((a, b) => {
                         return Number(a.name) - Number(b.name);
                     })
-                    //reads all of the files
-                    var requestQueue = [] //queue for requests, store this.fileread requests
-                    for(var i = 0; i < files.length; i++){
-                        console.log(files[i].name);
-                        requestQueue.push([files[i], i]);
-                    }
-                    var fileArray = [];
-                    let done = 0;
-                    let total = files.length;
-                    while(true){
-                        var n = requestQueue.shift();
-                        try{
-                            this.fileRead(n[0].id).then(x => {
-                                fileArray[n[1]] = x;
-                                done++;
-                                console.log(done + " out of " + total);
-                                if(total === done){
-                                    var comp = "";
-                                    for (let i = 0; i < fileArray.length; i++) {
-                                        comp += fileArray[i];
-                                    }
-                                    res(comp);
-                                }
-                            });
-
-                        }catch(err){
-                            requestQueue.push(n)
+                    Promise.all(files.map((x, i) => {
+                        return this.fileRead(x.id);
+                    }))
+                    .then(values => {
+                        for(let i = 0; i < files.length; i++){
+                            console.log((i*100/files.length) + "% done downloading");
+                            full += values[i].substring(1);
                         }
-                        if(requestQueue.length === 0)
-                            break;
-                    }
+                        res(full);
+                    });
                 });
         });
     }
 
-    writeFolder(req, folderId) {
+    writeFolder(req, folderId, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.writeFolder, [req, folderId]);
+        }
         return new Promise ((res, rej) => {
             console.log("started uploading");
             this.getUserFolder(req.user.user_id)
@@ -311,32 +349,29 @@ class Drive {
                 var stack = [];
                 fs.readFile(req.file.path, "base64", (err, data) => {
                     var title = this.prepName(req.file.originalname);
-                    this.createFolder(title, folderId || id).then(file => {
+                    const actualId = folderId === undefined ? folderId : id;
+                    console.log(actualId);
+                    this.createFolder(title, actualId).then(file => {
                         var split_data = this.splitData(data + "");
-                        const WAIT_TIME = 500;
                         var done = 0;
-                        let cur = 0;
-                        const int = setInterval(() => {
-                            if(cur === split_data.length)
-                                return clearInterval(int);
-                           this.fileWrite(cur + "", split_data[cur] + "", file.data.id)
+                        for(let i = 0; i < split_data.length; i++){
+                            
+                            this.fileWrite(i + "", split_data[i] + "", file.data.id)
                             .then(x => {
                                 done++;
                                 console.log("uploading: " + (done*100/split_data.length) + "%");
-                            }) 
-                            .catch(x => {
-                                console.log("Retrying file " + (done + 1) + "/" + split_data.length);
-                                CustomElementRegistry(x);
-                            })   
-                            cur++;
-                        }, WAIT_TIME);
+                            })
+                        }
                     })
                 })
             })
         })
     }
 
-    getUserFolder(userId) {
+    getUserFolder(userId, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.getUserFolder, [userId]);
+        }
         return new Promise((res, rej) => {
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
                 .then(files => {
@@ -391,7 +426,10 @@ class Drive {
         return org.replace("&", ".");
     }
 
-    getUserFiles(userId, folderId) {
+    getUserFiles(userId, folderId, inQueue) {
+        if(!inQueue){
+            return this.addToQueue(this.getUserFiles, [userId, folderId]);
+        }
         return new Promise((res, rej) => {
             //authorizes the reading files in hihi drive
             authorize(this.credentials, this.getFiles, "16Odad93Eb-xIsZPIbDXaESJBMv5vI-fX")
