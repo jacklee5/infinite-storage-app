@@ -1,14 +1,14 @@
 {
   "files": {
     "main.css": "/static/css/main.dbc9a29c.chunk.css",
-    "main.js": "/static/js/main.1d9ab61f.chunk.js",
-    "main.js.map": "/static/js/main.1d9ab61f.chunk.js.map",
+    "main.js": "/static/js/main.cf0d88b9.chunk.js",
+    "main.js.map": "/static/js/main.cf0d88b9.chunk.js.map",
     "runtime~main.js": "/static/js/runtime~main.a7ca617d.js",
     "runtime~main.js.map": "/static/js/runtime~main.a7ca617d.js.map",
     "static/js/2.9045cfd3.chunk.js": "/static/js/2.9045cfd3.chunk.js",
     "static/js/2.9045cfd3.chunk.js.map": "/static/js/2.9045cfd3.chunk.js.map",
     "index.html": "/index.html",
-    "precache-manifest.52da0c01f5c906e9d5a6f88674a1e577.js": "/precache-manifest.52da0c01f5c906e9d5a6f88674a1e577.js",
+    "precache-manifest.cfe3c37ec712c349462005e09b8e0c1b.js": "/precache-manifest.cfe3c37ec712c349462005e09b8e0c1b.js",
     "service-worker.js": "/service-worker.js",
     "static/css/main.dbc9a29c.chunk.css.map": "/static/css/main.dbc9a29c.chunk.css.map",
     "static/media/BerdBoxLogo.png": "/static/media/BerdBoxLogo.4d22136b.png",

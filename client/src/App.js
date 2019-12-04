@@ -15,7 +15,7 @@ class App extends React.Component {
     .then(data => data.json())
     .then(authenticated => {
       if(!authenticated)
-        window.location.href = "http://" + window.location.hostname;
+        window.location.href = "http://" + window.location.hostname + "/auth/google";
       else
         this.setState({authenticated: true});
     })

@@ -15,7 +15,7 @@ const drive = new Drive();
 const path = require("path");
 
 //dev or prod
-const HOST = process.env.NODE_ENV ? "https://berdbox.azurewebsites.net/" : "http://localhost:1337";
+const HOST = process.env.NODE_ENV ? "https://berdbox.azurewebsites.net/" : "http://localhost";
 
 // Create a configuration object for our Azure SQL connection parameters
 const dbConfig = {
