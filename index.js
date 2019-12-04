@@ -15,7 +15,7 @@ const drive = new Drive();
 const path = require("path");
 
 //dev or prod
-const HOST = process.env.NODE_ENV ? "https://berdbox.azurewebsites.net/" : "http://localhost";
+const HOST = process.env.NODE_ENV ? "https://berdbox.herokuapp.com" : "http://localhost";
 
 // Create a configuration object for our Azure SQL connection parameters
 const dbConfig = {
