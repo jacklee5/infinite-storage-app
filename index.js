@@ -12,6 +12,7 @@ const multer  = require('multer')
 const upload = multer({ dest: 'uploads/' })
 const Drive = require('./drive.js');
 const drive = new Drive();
+const path = require("path");
 
 //dev or prod
 const HOST = process.env.NODE_ENV ? "https://berdbox.azurewebsites.net/" : "http://localhost:1337";
@@ -147,10 +148,6 @@ function isUserAuthenticated(req, res, next) {
 //static
 app.use("/static", express.static("static"));
 
-app.get("/", isUserAuthenticated, (req, res) => {
-    res.send("you are authenticated");
-});
-
 // Logout route
 app.get("/logout", (req, res) => {
     req.logout(); 
@@ -168,7 +165,7 @@ app.get('/auth/google/callback', passport.authenticate('google'), (req, res) => 
         .then(results => {
             const result = results.recordset;
             if (result[0]) {
-                res.redirect("http://localhost:3000");
+                res.redirect("/");
             } else {
                 conn.query`INSERT INTO users (username, google_id, photo) VALUES (${req.user.displayName}, ${req.user.id}, ${req.user.photo})`
                 .then(result => {
@@ -261,6 +258,12 @@ app.post("/api/uploadFile/:id", upload.single("file"), (req, res) => {
 app.get("/api/logout", (req, res) => {
     req.logout();
     res.redirect("/");
+});
+
+app.use(express.static(path.join(__dirname, 'client/build')));
+
+app.get("*", (req, res) => {
+    res.sendFile(path.join(__dirname+'/client/build/index.html'));
 })
 
 const port = process.env.PORT || 1337;
