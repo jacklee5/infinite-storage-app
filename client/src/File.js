@@ -13,7 +13,8 @@ export default class File extends React.Component {
         super();
         this.choosePicture = this.choosePicture.bind(this);
     }
-    
+
+    //Based on the file type, a different image is loaded
     choosePicture(check) {
         const images = ["jpg", "jpeg", "tiff", "gif", "bmp", "png", "svg", "pdn", "sai", "psd", "ai"];
         const videos = ["webm", "avi", "mov", "mp4", "m4v", "3gp", "flv", "swf"];

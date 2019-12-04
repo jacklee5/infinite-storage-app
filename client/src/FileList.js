@@ -37,6 +37,7 @@ class FileList extends React.Component {
             this.update();
         });
     }
+    //Takes keyboard strokes and uses them as inputs for Berdbox
     keyHandler(keyCode){
         if(this.state.activeIndex === -1) return;
         const enter = 13;
@@ -44,15 +45,19 @@ class FileList extends React.Component {
         const down = 40;
         const del = 46;
         switch(keyCode) {
+            //Enter does an action based on file type
             case enter:
                 this.onFileSelect(this.state.data[this.state.activeIndex]);
                 break;
+            //Up goes up in the list
             case up:
                 this.setState({activeIndex: (this.state.activeIndex - 1 + this.state.data.length) % this.state.data.length});
                 break;
+            //Down goes down in the list
             case down:
                 this.setState({activeIndex: (this.state.activeIndex + 1) % this.state.data.length});
                 break;
+            //Del deletes a file
             case del:
                 if(!this.state.data[this.state.activeIndex]) break;
                 fetch("/api/delFile/" + this.state.data[this.state.activeIndex].id)
@@ -65,6 +70,7 @@ class FileList extends React.Component {
                 break;
         }
     }
+    //If the file selected is a folder, it is opened. Otherwise, the file is downloaded
     onFileSelect(file){
         if(file.type === "folder"){
             this.props.history.push("/folder/" + file.id);
@@ -72,6 +78,7 @@ class FileList extends React.Component {
             window.location.href = "http://localhost:1337/api/getFile/" + file.id;
         }
     }
+    //Checks for a click. If double clicked, the file is downloaded
     handleFileClick(event, element){
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
@@ -82,11 +89,13 @@ class FileList extends React.Component {
         }        
         this.last_click = Date.now();
     }
+    //Downloads file
     dlfile(event, element) {
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
         window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
     }
+    //Deletes file. Also removes it from the files shown
     delfile(event, element) {
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
