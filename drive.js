@@ -92,6 +92,8 @@ class Drive {
          * }
         */
 
+        //Queue
+        //Each API call to Google is added to the queue to make sure each request is fulfilled eventually
         this.queue = [];
         setInterval(() => {
             if(this.queue.length == 0) return;
@@ -109,6 +111,8 @@ class Drive {
         this.getFiles = this.getFiles.bind(this);
     }
 
+    //Adds a request to the queue.
+    //Inlcudes function to call, arguments, and res
     addToQueue(f, args){
         return new Promise((res, rej) => {
             this.queue.push({
@@ -120,7 +124,9 @@ class Drive {
         
     }
 
+    //Reads a file in the drive. Does not mean the entire file uploaded, but a file part created in splitting the original
     fileRead(id, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.fileRead, [id]);
         }
@@ -148,7 +154,9 @@ class Drive {
         });
     }
 
+    //Writes a file in the drive. Does not mean the entire file uploaded, but a file part created in splitting the original
     fileWrite(title, data, folder, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.fileWrite, [title, data, folder]);
         }
@@ -184,7 +192,9 @@ class Drive {
         })
     }
 
+    ////Deletes a file in the drive. Does not mean the entire file uploaded, but a file part created in splitting the original
     fileDelete(id, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.fileDelete, [id]);
         }
@@ -203,7 +213,9 @@ class Drive {
         });
     }
 
+    //Creates a folder in the drive. The type of folder that is used to store files and not file parts.
     createFolder(title, parent, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.createFolder, [title, parent]);
         }
@@ -236,7 +248,7 @@ class Drive {
         })
     }
 
-    //splits a string into sets of 100000 characters
+    //splits a string into sets of part_length characters
     splitData(data) {
         const part_length = 1535000;
         var folder_size = Math.ceil(data.length / part_length);
@@ -311,6 +323,7 @@ class Drive {
         })
     }
 
+    //Reads each file part in a folder and assembles them in order based on file name.
     readFolder(auth, folderId, inQueue) {
         if(!inQueue){
             return this.addToQueue(this.readFolder, [auth, folderId]);
@@ -338,7 +351,9 @@ class Drive {
         });
     }
 
+    //Creates a folder, splits a file, and uploads file parts
     writeFolder(req, folderId, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.writeFolder, [req, folderId]);
         }
@@ -350,10 +365,11 @@ class Drive {
                     var title = this.prepName(req.file.originalname);
                     const actualId = (folderId || id);
                     this.createFolder(title, actualId).then(file => {
+                        //Splits data
                         var split_data = this.splitData(data + "");
                         var done = 0;
                         for(let i = 0; i < split_data.length; i++){
-                            
+                            //Creates file for each data part
                             this.fileWrite(i + "", split_data[i] + "", file.data.id)
                             .then(x => {
                                 done++;
@@ -369,7 +385,9 @@ class Drive {
         })
     }
 
+    //Reads a user's folder given the ID
     getUserFolder(userId, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.getUserFolder, [userId]);
         }
@@ -428,6 +446,7 @@ class Drive {
     }
 
     getUserFiles(userId, folderId, inQueue) {
+        //Adds to queue if not in already
         if(!inQueue){
             return this.addToQueue(this.getUserFiles, [userId, folderId]);
         }
