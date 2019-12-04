@@ -72,7 +72,7 @@ class FileList extends React.Component {
         if(file.type === "folder"){
             this.props.history.push("/folder/" + file.id);
         } else{
-            window.location.href = "http://localhost:1337/api/getFile/" + file.id;
+            window.location.href = window.location.hostname + "/api/getFile/" + file.id;
         }
     }
     handleFileClick(event, element){
@@ -88,7 +88,7 @@ class FileList extends React.Component {
     dlfile(event, element) {
         event.stopPropagation();
         this.setState({activeIndex: element.props.index});
-        window.location.href = "http://localhost:1337/api/getFile/" + this.state.data[element.props.index].id
+        window.location.href = window.location.hostname + "/api/getFile/" + this.state.data[element.props.index].id
     }
     delfile(event, element) {
         event.stopPropagation();
