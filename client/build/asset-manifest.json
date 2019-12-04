@@ -1,0 +1,23 @@
+{
+  "files": {
+    "main.css": "/static/css/main.dbc9a29c.chunk.css",
+    "main.js": "/static/js/main.1d9ab61f.chunk.js",
+    "main.js.map": "/static/js/main.1d9ab61f.chunk.js.map",
+    "runtime~main.js": "/static/js/runtime~main.a7ca617d.js",
+    "runtime~main.js.map": "/static/js/runtime~main.a7ca617d.js.map",
+    "static/js/2.9045cfd3.chunk.js": "/static/js/2.9045cfd3.chunk.js",
+    "static/js/2.9045cfd3.chunk.js.map": "/static/js/2.9045cfd3.chunk.js.map",
+    "index.html": "/index.html",
+    "precache-manifest.52da0c01f5c906e9d5a6f88674a1e577.js": "/precache-manifest.52da0c01f5c906e9d5a6f88674a1e577.js",
+    "service-worker.js": "/service-worker.js",
+    "static/css/main.dbc9a29c.chunk.css.map": "/static/css/main.dbc9a29c.chunk.css.map",
+    "static/media/BerdBoxLogo.png": "/static/media/BerdBoxLogo.4d22136b.png",
+    "static/media/Folder.png": "/static/media/Folder.cc300e12.png",
+    "static/media/Loading.gif": "/static/media/Loading.422dc8f0.gif",
+    "static/media/Movie.gif": "/static/media/Movie.02c5b766.gif",
+    "static/media/Picture.png": "/static/media/Picture.3a87b6d5.png",
+    "static/media/sad.png": "/static/media/sad.1494db0b.png",
+    "static/media/sound.png": "/static/media/sound.c9d38e51.png",
+    "static/media/txt.png": "/static/media/txt.56fc3700.png"
+  }
+}
