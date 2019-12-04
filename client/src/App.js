@@ -1,6 +1,7 @@
 import React from 'react';
 import {BrowserRouter, Switch, Route} from 'react-router-dom'
 import MainPage from './MainPage'
+import loadingImg from './piccypics/Loading.gif'
 
 class App extends React.Component {
   constructor(){
@@ -30,7 +31,7 @@ class App extends React.Component {
           </Switch>
         </BrowserRouter>
       </div>
-      : <div>loading...</div>)
+      : <img src = {loadingImg}></img>)
     )
   }
 }

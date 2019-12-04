@@ -220,13 +220,13 @@ class Drive {
             return this.addToQueue(this.createFolder, [title, parent]);
         }
         return new Promise((res, rej) => {
+            console.log("create folder in " + parent);
             authorize(this.credentials, (auth) => {
                 //create drive object with authentification
                 const drive = google.drive({
                     version: 'v3',
                     auth
                 });
-
                 //create metadata of folder
                 var fileMetadata = {
                     name: title,
@@ -240,7 +240,7 @@ class Drive {
                     fields: 'id'
                 }, null, (err, response) => {
                     if(err)
-                        rej(err);
+                        console.log(err);
                     else
                         res(response);
                 });
@@ -250,7 +250,7 @@ class Drive {
 
     //splits a string into sets of part_length characters
     splitData(data) {
-        const part_length = 100000;
+        const part_length = 1535000;
         var folder_size = Math.ceil(data.length / part_length);
         var split_data = [];
         for (let i = 0; i < folder_size - 1; i++) {
@@ -341,8 +341,8 @@ class Drive {
                         return this.fileRead(x.id);
                     }))
                     .then(values => {
-                        for(let i = 0; i < files.length; i++){
-                            console.log((i*100/files.length) + "% done downloading");
+                        for(let i = 0; i < values.length; i++){
+                            console.log(`${i} of ${values.length} done`);
                             full += values[i].substring(1);
                         }
                         res(full);
@@ -361,13 +361,9 @@ class Drive {
             console.log("started uploading");
             this.getUserFolder(req.user.user_id)
             .then(id => {
-                var stack = [];
-                //Reads the data of uploaded file
                 fs.readFile(req.file.path, "base64", (err, data) => {
                     var title = this.prepName(req.file.originalname);
-                    const actualId = folderId === undefined ? folderId : id;
-                    console.log(actualId);
-                    //Creates folder
+                    const actualId = (folderId || id);
                     this.createFolder(title, actualId).then(file => {
                         //Splits data
                         var split_data = this.splitData(data + "");
@@ -378,6 +374,9 @@ class Drive {
                             .then(x => {
                                 done++;
                                 console.log("uploading: " + (done*100/split_data.length) + "%");
+                                if(done === split_data.length){
+                                    res("ok");
+                                }
                             })
                         }
                     })

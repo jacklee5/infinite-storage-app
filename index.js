@@ -216,6 +216,7 @@ app.get("/api/files/:id", (req, res) => {
 app.post("/api/createFolder", (req, res) => {
     drive.getUserFolder(req.user.user_id)
     .then(id => {
+        console.log("folder id: " + id);
         drive.createFolder(req.body.title + "&folder", id)
         .then(res.send("ok"));
     })
@@ -250,13 +251,13 @@ let done = 0;
 app.post("/api/uploadFile", upload.single('file'), (req, res) => {
     drive.writeFolder(req)
     .then (x => {
-        res("uploaded");
+        res.send("uploaded");
     })
 })
 app.post("/api/uploadFile/:id", upload.single("file"), (req, res) => {
     drive.writeFolder(req, req.params.id)
     .then(x => {
-        res("uploaded");
+        res.send("uploaded");
     })
 })
 

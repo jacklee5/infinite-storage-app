@@ -4,6 +4,9 @@ import File from './File';
 import CreateFileButton from './CreateFileButton';
 import {withRouter} from 'react-router-dom'
 
+import loadingImg from './piccypics/Loading.gif';
+import sadImg from './piccypics/sad.png';
+
 class FileList extends React.Component {
     constructor(props){
         super(props);
@@ -162,8 +165,8 @@ class FileList extends React.Component {
                         delfile = {this.delfile}
                     ></File>)
                 }) 
-                : "this folder is empty"
-                : "loading files..."
+                : (<img src = {sadImg} style = {{width: "100px", height: "100px"}}></img>)
+                : (<img src = {loadingImg} style = {{width: "100px", height: "100px"}}></img>)
                 }
             </div>
             <CreateFileButton update = {this.update} deselect = {this.deselect}></CreateFileButton>
