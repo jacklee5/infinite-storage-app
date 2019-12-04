@@ -35,9 +35,6 @@ conn.connect()
     // Successfull connection
     .then(function () {
         console.log("connected to database");
-
-
-
     })
     // Handle connection errors
     .catch(function (err) {
